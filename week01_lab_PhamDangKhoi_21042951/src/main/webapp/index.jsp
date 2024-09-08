@@ -1,18 +1,11 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>JSP - Hello World</title>
+    <meta charset="UTF-8">
+    <title>Title</title>
 </head>
 <body>
-<h3><%= "Ten tai khoan" %>
-</h3>
-<input type="hidden" name="action" value="add"/>
-
-<h3><%= "Mat khau" %>
-</h3>
-<input type="hidden" name="action" value="add"/>
-<br/>
-<a href="hello-servlet">Hello Servlet</a>
+<h1>Home page</h1>
+<a href="login.html">Login</a>
 </body>
 </html>

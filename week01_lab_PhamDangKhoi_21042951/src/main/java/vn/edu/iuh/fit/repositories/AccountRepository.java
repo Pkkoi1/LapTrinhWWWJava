@@ -1,33 +1,24 @@
 package vn.edu.iuh.fit.repositories;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Persistence;
 import vn.edu.iuh.fit.entities.Account;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
 public class AccountRepository {
-    private Connection connection;
+    private EntityManager entityManager;
 
-    public AccountRepository(Connection connection) {
-        this.connection = connection;
+    public AccountRepository() {
+        entityManager = Persistence.createEntityManagerFactory("MariaBD").createEntityManager();
     }
 
     public boolean login(String username, String password) {
-        String query = "SELECT * FROM account WHERE username = ? AND password = ?";
+        String query = "SELECT a FROM Account a WHERE a.accountId = :username AND a.password = :password";
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, username);
-            statement.setString(2, password);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return true;
-            }
-            resultSet.close();
-            statement.close();
-            return false;
-
+            Account account = entityManager.createQuery(query, Account.class)
+                    .setParameter("username", username)
+                    .setParameter("password", password)
+                    .getSingleResult();
+            return account != null;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -35,23 +26,11 @@ public class AccountRepository {
     }
 
     public Account getAccount(String username) {
-        String query = "SELECT * FROM account WHERE username = ?";
+        String query = "SELECT a FROM Account a WHERE a.accountId = :username";
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, username);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                Account account = new Account();
-                account.setAccountId(resultSet.getString("account_id"));
-                account.setFullName(resultSet.getString("full_name"));
-                account.setPassword(resultSet.getString("password"));
-                account.setEmail(resultSet.getString("email"));
-                account.setPhone(resultSet.getString("phone"));
-                account.setStatus(resultSet.getByte("status"));
-                return account;
-            }
-            resultSet.close();
-            statement.close();
+            return entityManager.createQuery(query, Account.class)
+                    .setParameter("username", username)
+                    .getSingleResult();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -59,23 +38,17 @@ public class AccountRepository {
     }
 
     public boolean addAccount(Account account) {
-        String query = "INSERT INTO account(account_id, full_name, password, email, phone, status) VALUES(?, ?, ?, ?, ?, ?)";
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, account.getAccountId());
-            statement.setString(2, account.getFullName());
-            statement.setString(3, account.getPassword());
-            statement.setString(4, account.getEmail());
-            statement.setString(5, account.getPhone());
-            statement.setByte(6, account.getStatus());
-            statement.executeUpdate();
-            statement.close();
+            entityManager.getTransaction().begin();
+            entityManager.persist(account);
+            entityManager.getTransaction().commit();
             return true;
         } catch (Exception e) {
             e.printStackTrace();
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
         }
         return false;
     }
-
-
 }
