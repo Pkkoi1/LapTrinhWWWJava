@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <style>
+        div {
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: inline-block;
+            width: 150px;
+        }
+
+        input {
+            width: 200px;
+        }
+    </style>
+    <script>
+        function showAlert(message) {
+            alert(message);
+        }
+    </script>
+</head>
+<body>
+<h1>Register new account</h1>
+<form action="register" method="post">
+    <input type="hidden" name="action" value="register">
+    <div>
+        <label>Account Name</label>
+        <input type="text" placeholder="Account name" name="accountId">
+    </div>
+    <div>
+        <label>Full Name</label>
+        <input type="text" placeholder="Name" name="fullName">
+    </div>
+    <div>
+        <label>Password</label>
+        <input type="password" placeholder="Mat khau" name="password">
+    </div>
+    <div>
+        <label>Email</label>
+        <input type="text" placeholder="Email" name="email">
+    </div>
+    <div>
+        <label>Phone number</label>
+        <input type="text" placeholder="Phone" name="phone">
+    </div>
+
+    <input type="submit" value="Register" onclick="showAlert('Successed')">
+</form>
+<input type="button" value="Cancel" onclick="showAlert('Canceled'); window.location.href='login.html';">
+
+</body>
+</html>

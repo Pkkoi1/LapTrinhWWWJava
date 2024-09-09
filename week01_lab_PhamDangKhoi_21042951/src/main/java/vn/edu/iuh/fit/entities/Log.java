@@ -7,12 +7,7 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "log")
-@NamedQueries({
-        @NamedQuery(name = "Log.findAll", query = "select l from Log l"),
-        @NamedQuery(name = "Log.findByAccountId", query = "select l from Log l where l.accountId = :accountId"),
-        @NamedQuery(name = "Log.deleteByAccountId", query = "delete from Log l where l.accountId = :accountId"),
-        @NamedQuery(name = "Log.updateLoginTimeAndLogoutTimeAndNotesByAccountId", query = "update Log l set l.loginTime = :loginTime, l.logoutTime = :logoutTime, l.notes = :notes where l.accountId = :accountId")
-})
+
 public class Log {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
