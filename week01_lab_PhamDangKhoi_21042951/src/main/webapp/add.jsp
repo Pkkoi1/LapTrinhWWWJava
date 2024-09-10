@@ -1,3 +1,6 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +16,7 @@
             width: 150px;
         }
 
-        input {
+        input, select {
             width: 200px;
         }
     </style>
@@ -52,7 +55,11 @@
     </div>
     <div>
         <label>Role</label>
-        <input type="text" placeholder="Role" name="role"> </input>
+        <select name="role">
+            <c:forEach var="role" items="${roleId}">
+                <option value="${role.roleId}">${role.roleName}</option>
+            </c:forEach>
+        </select>
     </div>
 
     <input type="submit" value="Add">

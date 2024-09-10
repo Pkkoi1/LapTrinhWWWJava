@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import vn.edu.iuh.fit.entities.Account;
+import vn.edu.iuh.fit.entities.Role;
 import vn.edu.iuh.fit.repositories.AccountRepository;
 import vn.edu.iuh.fit.repositories.LogRepository;
 import vn.edu.iuh.fit.repositories.RoleRepository;
@@ -15,6 +16,7 @@ import vn.edu.iuh.fit.services.RoleServices;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +30,8 @@ public class ControllerServlet extends HttpServlet {
 
     Date loginTime;
     Date logoutTime;
-    Account currentAccount;
-    Map<Account, String> currentAccountMap;
+
+    String actionDetail = "";
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -57,26 +59,25 @@ public class ControllerServlet extends HttpServlet {
         switch (action) {
             case "login":
                 if (accountServices.login(username, password)) {
-                    String roleId = roleServices.getRoleIdByAccountId(username);
-                    role = roleId;
+                    List<String> roles = roleServices.getRoleOfAccount(username);
                     name = username;
                     pass = password;
                     loginTime = new Date();
-                    if (roleId == null) {
-                        resp.sendRedirect("/error.jsp");
-                        return;
-                    } else if (roleId.equals("admin")) {
-                        enable = "";
+                    boolean isAdmin = roles.contains("admin");
 
-                        Map<Account, String> accountMap = RoleServices.gellAccountAndRole();
+                    actionDetail = "Login. \n";
 
-                        accessDashboard(req, resp, accountMap);
-                    } else {
+                    if (!isAdmin) {
                         enable = "disabled";
-
+                        role = "user";
                         Map<Account, String> accountMap = RoleServices.getRoleByAccountId(name);
-
                         userAccessDashboard(req, resp, accountMap);
+                    } else {
+
+                        enable = "";
+                        role = "admin";
+                        Map<Account, String> accountMap = RoleServices.gellAccountAndRole();
+                        accessDashboard(req, resp, accountMap);
                     }
                 } else {
                     resp.sendRedirect("/error.jsp");
@@ -101,7 +102,7 @@ public class ControllerServlet extends HttpServlet {
                     Map<Account, String> accountMap = RoleServices.gellAccountAndRole();
 
                     accessDashboard(req, resp, accountMap);
-//                    out.println("Success");
+                    actionDetail = new StringBuilder(actionDetail).append("Add account: ").append(accountId).append(". \n").toString();
                 } else {
 //                    resp.sendRedirect("/error.jsp");
                     out.println("Error");
@@ -113,6 +114,7 @@ public class ControllerServlet extends HttpServlet {
                 if (accountServices.deleteAccount(accountId1)) {
                     Map<Account, String> accountMap = RoleServices.gellAccountAndRole();
                     accessDashboard(req, resp, accountMap);
+                    actionDetail = new StringBuilder(actionDetail).append("Delete account: ").append(accountId1).append(". \n").toString();
                 } else {
                     out.println("Error");
                 }
@@ -120,12 +122,14 @@ public class ControllerServlet extends HttpServlet {
             case "edit":
                 String accountId2 = req.getParameter("accountId");
                 Account account1 = accountServices.getAccount(accountId2);
-                String roleId = roleServices.getRoleIdByAccountId(accountId2);
+                List<Role> roleId = roleServices.getRoleName();
+                List<String> userRoles = roleServices.getRoleOfAccount(accountId2);
 
                 session.setAttribute("account", account1);
                 session.setAttribute("username", name);
                 session.setAttribute("role", role);
-                session.setAttribute("userRole", roleId);
+                session.setAttribute("List_role", roleId);
+                session.setAttribute("userRole", userRoles);
                 session.setAttribute("enable", enable);
                 resp.sendRedirect("/update.jsp");
                 break;
@@ -135,32 +139,55 @@ public class ControllerServlet extends HttpServlet {
                 String fullName3 = req.getParameter("fullName");
                 String email3 = req.getParameter("email");
                 String phone3 = req.getParameter("phone");
-                String newRoleId3 = req.getParameter("role");
                 String status3 = req.getParameter("status");
-                String roleId1 = roleServices.getRoleIdByAccountId(accountId3);
+                String[] newRoleIdArray = req.getParameterValues("role");
+                List<String> newRoleId3 = newRoleIdArray != null ? List.of(newRoleIdArray) : new ArrayList<>();
 
+                List<String> userRoles3 = roleServices.getRoleOfAccount(name);
                 if (accountServices.updateAccount(accountId3, password3, fullName3, email3, phone3, Byte.parseByte(status3))) {
-                    accountServices.deleteGrantAccess(accountId3, roleId1);
-                    accountServices.insertGrantAccess(accountId3, newRoleId3);
 
-                    String userRole = roleServices.getRoleIdByAccountId(name);
-                    role = userRole;
-                    if (userRole.equals("admin")) {
+                    actionDetail = new StringBuilder(actionDetail).append("Update account: ").append(accountId3).append(". \n").toString();
+                    List<String> userRole = roleServices.getRoleOfAccount(accountId3);
+
+                    List<String> newAdd = new ArrayList<>();
+                    List<String> removedRole = new ArrayList<>();
+
+                    for (String role : userRole) {
+                        if (!newRoleId3.contains(role)) {
+                            removedRole.add(role);
+                        }
+                    }
+                    for (String role : newRoleId3) {
+                        if (!userRole.contains(role)) {
+                            newAdd.add(role);
+                        }
+                    }
+                    for (String role : removedRole) {
+                        accountServices.deleteGrantAccess(accountId3, role);
+                    }
+                    for (String role : newAdd) {
+                        accountServices.insertGrantAccess(accountId3, role);
+                    }
+
+                    if (userRoles3.contains("admin")) {
                         enable = "";
-                        Map<Account, String> accountMapUpdate = RoleServices.gellAccountAndRole();
+                        role = "admin";
+                        Map<Account, String> accountMapUpdate = roleServices.gellAccountAndRole();
                         accessDashboard(req, resp, accountMapUpdate);
                     } else {
                         enable = "disabled";
-                        Map<Account, String> accountMapUpdate = RoleServices.getRoleByAccountId(name);
+                        role = "user";
+                        Map<Account, String> accountMapUpdate = roleServices.getRoleByAccountId(accountId3);
                         userAccessDashboard(req, resp, accountMapUpdate);
                     }
-
                 } else {
                     out.println("Error");
                 }
                 break;
             case "show":
                 String roleId2 = req.getParameter("role");
+                actionDetail = new StringBuilder(actionDetail).append("Show account by role: ").append(roleId2).append(". \n").toString();
+
                 if (roleId2.equals("admin")) {
                     Map<Account, String> accountMapShow = RoleServices.showAllAccountByRole(roleId2);
                     accessDashboard(req, resp, accountMapShow);
@@ -173,9 +200,11 @@ public class ControllerServlet extends HttpServlet {
                 }
                 break;
             case "logout":
+                actionDetail.concat("Logout. \n");
+                actionDetail = new StringBuilder(actionDetail).append("Logout. \n").toString();
                 session.invalidate();
                 logoutTime = new Date();
-                logRepository.addLog(name, loginTime, logoutTime);
+                logRepository.addLog(name, loginTime, logoutTime, actionDetail);
                 resp.sendRedirect("/login.html");
                 break;
             case "register":
@@ -199,6 +228,11 @@ public class ControllerServlet extends HttpServlet {
                     out.println("Error");
                 }
                 break;
+            case "showAddAccountPage":
+                List<Role> roleIds = roleServices.getRoleName();
+                req.setAttribute("roleId", roleIds);
+                req.getRequestDispatcher("/add.jsp").forward(req, resp);
+                break;
             default:
                 out.println("Invalid action");
                 break;
@@ -213,18 +247,29 @@ public class ControllerServlet extends HttpServlet {
         RoleRepository roleRepository = new RoleRepository();
         RoleServices roleServices = new RoleServices(roleRepository);
 
-        String roleId = roleServices.getRoleIdByAccountId(name);
-        role = roleId;
+        List<String> roleIds = roleServices.getRoleOfAccount(name);
+        String role = String.join(", ", roleIds);
+        List<Role> roles = roleServices.getRoleName();
+
+
         Account account = accountServices.getAccount(name);
 
+        for (Map.Entry<Account, String> entry : map.entrySet()) {
+            Account acc = entry.getKey();
+            List<String> userRoles = roleServices.getRoleOfAccount(acc.getAccountId());
+            String rolesAsString = String.join(", ", userRoles);
+            entry.setValue(rolesAsString);
+        }
         HttpSession session = req.getSession(true);
         session.setAttribute("account", account);
+        session.setAttribute("role_List", roleIds);
+        session.setAttribute("List", roles);
         session.setAttribute("role", role);
         session.setAttribute("List_Account", map);
         session.setAttribute("enable", enable);
         resp.sendRedirect("/dashboard.jsp");
-
     }
+
 
     public void userAccessDashboard(HttpServletRequest req, HttpServletResponse resp, Map<Account, String> map) throws ServletException, IOException {
         AccountRepository accountRepository = new AccountRepository();
@@ -233,17 +278,27 @@ public class ControllerServlet extends HttpServlet {
         RoleRepository roleRepository = new RoleRepository();
         RoleServices roleServices = new RoleServices(roleRepository);
 
-        String roleId = roleServices.getRoleIdByAccountId(name);
-        role = roleId;
-        Account account = accountServices.getAccount(name);
+        List<String> roleIds = roleServices.getRoleOfAccount(name);
+        String role = String.join(", ", roleIds);
 
+        Account account = accountServices.getAccount(name);
+        List<Role> roles = roleServices.getRoleName();
+
+        for (Map.Entry<Account, String> entry : map.entrySet()) {
+            Account acc = entry.getKey();
+            List<String> userRoles = roleServices.getRoleOfAccount(acc.getAccountId());
+            String rolesAsString = String.join(", ", userRoles);
+            entry.setValue(rolesAsString);
+        }
         HttpSession session = req.getSession(true);
         session.setAttribute("account", account);
-        session.setAttribute("role", roleId);
+        session.setAttribute("role", role);
+        session.setAttribute("role_List", roles);
+        session.setAttribute("List", roles);
         session.setAttribute("List_Account", map);
         session.setAttribute("enable", enable);
-        resp.sendRedirect("/dashboard.jsp");
 
+        resp.sendRedirect("/dashboard.jsp");
     }
 
 

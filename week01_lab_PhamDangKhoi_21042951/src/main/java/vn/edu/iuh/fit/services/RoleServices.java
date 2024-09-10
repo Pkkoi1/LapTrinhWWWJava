@@ -1,8 +1,10 @@
 package vn.edu.iuh.fit.services;
 
 import vn.edu.iuh.fit.entities.Account;
+import vn.edu.iuh.fit.entities.Role;
 import vn.edu.iuh.fit.repositories.RoleRepository;
 
+import java.util.List;
 import java.util.Map;
 
 public class RoleServices {
@@ -31,5 +33,13 @@ public class RoleServices {
 
     public static Map<Account, String> showAccountByRole(String username, String role) {
         return roleRepository.showAccountByRole(username, role);
+    }
+
+    public List<Role> getRoleName() {
+        return roleRepository.getRoleName();
+    }
+
+    public List<String> getRoleOfAccount(String accountId) {
+        return roleRepository.getRoleOfAccount(accountId);
     }
 }

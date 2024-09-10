@@ -2,6 +2,8 @@
 <%@ page import="java.util.List" %>
 <%@ page import="vn.edu.iuh.fit.entities.Account" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
 
 <!DOCTYPE html>
 <html>
@@ -69,18 +71,19 @@
             </c:when>
         </c:choose>
     </div>
+    <h3 style="margin-bottom: 10px">Role</h3>
     <div>
         <label>Role</label>
-        <c:choose>
-            <c:when test="${userRole == 'admin'}">
-                <input type="radio" name="role" value="admin" checked ${enable}> Admin
-                <input type="radio" name="role" value="user" ${enable}> User
-            </c:when>
-            <c:when test="${userRole == 'user'}">
-                <input type="radio" name="role" value="admin" ${enable}> Admin
-                <input type="radio" name="role" value="user" checked ${enable}> User
-            </c:when>
-        </c:choose>
+        <c:forEach var="roles" items="${List_role}">
+            <input
+                    type="checkbox"
+                    name="role"
+                    value="${roles.roleId}"
+                    <c:if test="${fn:contains(userRole, roles.roleId)}">checked</c:if>
+                ${enable}>
+            ${roles.roleId}
+        </c:forEach>
+
     </div>
     <button type="submit">Update</button>
 </form>

@@ -76,4 +76,17 @@ public class RoleRepository {
         }
         return result;
     }
+
+    public List<Role> getRoleName() {
+        String query = "SELECT r FROM Role r";
+        return entityManager.createQuery(query, Role.class).getResultList();
+
+    }
+
+    public List<String> getRoleOfAccount(String accountId) {
+        String query = "SELECT ga.id.roleId FROM GrantAccess ga WHERE ga.id.accountId = :accountId";
+        return entityManager.createQuery(query, String.class)
+                .setParameter("accountId", accountId)
+                .getResultList();
+    }
 }

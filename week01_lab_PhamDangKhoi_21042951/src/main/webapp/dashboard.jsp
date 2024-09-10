@@ -1,13 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="vn.edu.iuh.fit.entities.Account" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page import="vn.edu.iuh.fit.services.RoleServices" %>
-<%@ page import="vn.edu.iuh.fit.repositories.RoleRepository" %>
-<%
-    RoleRepository roleRepository = new RoleRepository();
-    RoleServices roleServices = new RoleServices(roleRepository);
-%>
+
 
 <html>
 <head>
@@ -96,14 +89,20 @@
 <form action="dashboard" method="post">
     <h3>Show one role</h3>
     <input type="hidden" name="action" value="show">
-    <input type="radio" name="role" value="user">User
-    <input type="radio" name="role" value="admin">Admin
+    <c:forEach var="role" items="${List}">
+        <input type="radio" name="role" value="${role.roleId}">${role.roleName}
+    </c:forEach>
     <input type="radio" name="role" value="">Hủy
     <button type="submit">Show</button>
 </form>
-<button ${enable}>
-    <a href="/add.html">Add</a>
-</button>
+
+<form action="dashboard" method="post">
+    <input type="hidden" name="action" value="showAddAccountPage">
+    <button ${enable}>
+        Add
+    </button>
+</form>
+
 <form action="logout" method="post"
       onsubmit="event.preventDefault(); confirmAction('Are you sure to logout?', this)">
     <input type="hidden" name="action" value="logout">
