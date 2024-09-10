@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import vn.edu.iuh.fit.entities.Account;
+import vn.edu.iuh.fit.entities.Log;
 import vn.edu.iuh.fit.entities.Role;
 import vn.edu.iuh.fit.repositories.AccountRepository;
 import vn.edu.iuh.fit.repositories.LogRepository;
@@ -33,6 +34,14 @@ public class ControllerServlet extends HttpServlet {
 
     String actionDetail = "";
 
+    AccountRepository accountRepository = new AccountRepository();
+    AccountServices accountServices = new AccountServices(accountRepository);
+
+    RoleRepository roleRepository = new RoleRepository();
+    RoleServices roleServices = new RoleServices(roleRepository);
+
+    LogRepository logRepository = new LogRepository();
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Boolean isLogin = false;
@@ -45,13 +54,7 @@ public class ControllerServlet extends HttpServlet {
             resp.sendRedirect("/error.jsp");
             return;
         }
-        AccountRepository accountRepository = new AccountRepository();
-        AccountServices accountServices = new AccountServices(accountRepository);
 
-        RoleRepository roleRepository = new RoleRepository();
-        RoleServices roleServices = new RoleServices(roleRepository);
-
-        LogRepository logRepository = new LogRepository();
         HttpSession session = req.getSession(true);
 
         PrintWriter out = resp.getWriter();
@@ -71,13 +74,17 @@ public class ControllerServlet extends HttpServlet {
                         enable = "disabled";
                         role = "user";
                         Map<Account, String> accountMap = RoleServices.getRoleByAccountId(name);
-                        userAccessDashboard(req, resp, accountMap);
+                        List<Role> rolesList = roleServices.getRoleName();
+
+                        userAccessDashboard(req, resp, accountMap, rolesList);
                     } else {
 
                         enable = "";
                         role = "admin";
                         Map<Account, String> accountMap = RoleServices.gellAccountAndRole();
-                        accessDashboard(req, resp, accountMap);
+                        List<Role> rolesList = roleServices.getRoleName();
+
+                        accessDashboard(req, resp, accountMap, rolesList);
                     }
                 } else {
                     resp.sendRedirect("/error.jsp");
@@ -100,8 +107,9 @@ public class ControllerServlet extends HttpServlet {
                 if (accountServices.addAccount(account)) {
                     accountServices.insertGrantAccess(accountId, newRoleId);
                     Map<Account, String> accountMap = RoleServices.gellAccountAndRole();
+                    List<Role> roles = roleServices.getRoleName();
 
-                    accessDashboard(req, resp, accountMap);
+                    accessDashboard(req, resp, accountMap, roles);
                     actionDetail = new StringBuilder(actionDetail).append("Add account: ").append(accountId).append(". \n").toString();
                 } else {
 //                    resp.sendRedirect("/error.jsp");
@@ -111,13 +119,7 @@ public class ControllerServlet extends HttpServlet {
                 break;
             case "delete":
                 String accountId1 = req.getParameter("accountId");
-                if (accountServices.deleteAccount(accountId1)) {
-                    Map<Account, String> accountMap = RoleServices.gellAccountAndRole();
-                    accessDashboard(req, resp, accountMap);
-                    actionDetail = new StringBuilder(actionDetail).append("Delete account: ").append(accountId1).append(". \n").toString();
-                } else {
-                    out.println("Error");
-                }
+                handleDeleteAccount(req, resp, accountId1);
                 break;
             case "edit":
                 String accountId2 = req.getParameter("accountId");
@@ -134,55 +136,7 @@ public class ControllerServlet extends HttpServlet {
                 resp.sendRedirect("/update.jsp");
                 break;
             case "update":
-                String accountId3 = req.getParameter("accountId");
-                String password3 = req.getParameter("password");
-                String fullName3 = req.getParameter("fullName");
-                String email3 = req.getParameter("email");
-                String phone3 = req.getParameter("phone");
-                String status3 = req.getParameter("status");
-                String[] newRoleIdArray = req.getParameterValues("role");
-                List<String> newRoleId3 = newRoleIdArray != null ? List.of(newRoleIdArray) : new ArrayList<>();
-
-                List<String> userRoles3 = roleServices.getRoleOfAccount(name);
-                if (accountServices.updateAccount(accountId3, password3, fullName3, email3, phone3, Byte.parseByte(status3))) {
-
-                    actionDetail = new StringBuilder(actionDetail).append("Update account: ").append(accountId3).append(". \n").toString();
-                    List<String> userRole = roleServices.getRoleOfAccount(accountId3);
-
-                    List<String> newAdd = new ArrayList<>();
-                    List<String> removedRole = new ArrayList<>();
-
-                    for (String role : userRole) {
-                        if (!newRoleId3.contains(role)) {
-                            removedRole.add(role);
-                        }
-                    }
-                    for (String role : newRoleId3) {
-                        if (!userRole.contains(role)) {
-                            newAdd.add(role);
-                        }
-                    }
-                    for (String role : removedRole) {
-                        accountServices.deleteGrantAccess(accountId3, role);
-                    }
-                    for (String role : newAdd) {
-                        accountServices.insertGrantAccess(accountId3, role);
-                    }
-
-                    if (userRoles3.contains("admin")) {
-                        enable = "";
-                        role = "admin";
-                        Map<Account, String> accountMapUpdate = roleServices.gellAccountAndRole();
-                        accessDashboard(req, resp, accountMapUpdate);
-                    } else {
-                        enable = "disabled";
-                        role = "user";
-                        Map<Account, String> accountMapUpdate = roleServices.getRoleByAccountId(accountId3);
-                        userAccessDashboard(req, resp, accountMapUpdate);
-                    }
-                } else {
-                    out.println("Error");
-                }
+                handleUpdateAccount(req, resp);
                 break;
             case "show":
                 String roleId2 = req.getParameter("role");
@@ -190,13 +144,17 @@ public class ControllerServlet extends HttpServlet {
 
                 if (roleId2.equals("admin")) {
                     Map<Account, String> accountMapShow = RoleServices.showAllAccountByRole(roleId2);
-                    accessDashboard(req, resp, accountMapShow);
+                    List<Role> roles = roleServices.getRoleName();
+                    accessDashboard(req, resp, accountMapShow, roles);
                 } else if (roleId2.equals("user")) {
                     Map<Account, String> accountMapShow = RoleServices.showAllAccountByRole(roleId2);
-                    userAccessDashboard(req, resp, accountMapShow);
+                    List<Role> roles = roleServices.getRoleName();
+                    userAccessDashboard(req, resp, accountMapShow, roles);
                 } else {
                     Map<Account, String> accountMapUpdate = RoleServices.gellAccountAndRole();
-                    accessDashboard(req, resp, accountMapUpdate);
+                    List<Role> roles = roleServices.getRoleName();
+
+                    accessDashboard(req, resp, accountMapUpdate, roles);
                 }
                 break;
             case "logout":
@@ -233,6 +191,26 @@ public class ControllerServlet extends HttpServlet {
                 req.setAttribute("roleId", roleIds);
                 req.getRequestDispatcher("/add.jsp").forward(req, resp);
                 break;
+            case "editRole":
+                String roleIdUpdate = req.getParameter("roleId");
+
+                Role roleUpdate = roleServices.getRole(roleIdUpdate);
+                List<Role> roles = roleServices.getRoleName();
+                req.setAttribute("List", roles);
+                req.setAttribute("roleUpdate", roleUpdate);
+                req.getRequestDispatcher("dashboard.jsp").forward(req, resp);
+                break;
+            case "addRole":
+                handleAddRole(req, resp);
+                break;
+            case "deleteRole":
+                String roleIdDelete = req.getParameter("roleId");
+
+                handleDeleteRole(req, resp, roleIdDelete);
+                break;
+            case "updateRole":
+                handleUpdateRole(req, resp);
+                break;
             default:
                 out.println("Invalid action");
                 break;
@@ -240,7 +218,7 @@ public class ControllerServlet extends HttpServlet {
 
     }
 
-    public void accessDashboard(HttpServletRequest req, HttpServletResponse resp, Map<Account, String> map) throws ServletException, IOException {
+    public void accessDashboard(HttpServletRequest req, HttpServletResponse resp, Map<Account, String> map, List<Role> roles) throws ServletException, IOException {
         AccountRepository accountRepository = new AccountRepository();
         AccountServices accountServices = new AccountServices(accountRepository);
 
@@ -249,9 +227,9 @@ public class ControllerServlet extends HttpServlet {
 
         List<String> roleIds = roleServices.getRoleOfAccount(name);
         String role = String.join(", ", roleIds);
-        List<Role> roles = roleServices.getRoleName();
+        LogRepository logRepository = new LogRepository();
 
-
+//        List<Log> log = logRepository.findLogbyAccount(name);
         Account account = accountServices.getAccount(name);
 
         for (Map.Entry<Account, String> entry : map.entrySet()) {
@@ -261,6 +239,7 @@ public class ControllerServlet extends HttpServlet {
             entry.setValue(rolesAsString);
         }
         HttpSession session = req.getSession(true);
+//        session.setAttribute("log", log);
         session.setAttribute("account", account);
         session.setAttribute("role_List", roleIds);
         session.setAttribute("List", roles);
@@ -271,7 +250,7 @@ public class ControllerServlet extends HttpServlet {
     }
 
 
-    public void userAccessDashboard(HttpServletRequest req, HttpServletResponse resp, Map<Account, String> map) throws ServletException, IOException {
+    public void userAccessDashboard(HttpServletRequest req, HttpServletResponse resp, Map<Account, String> map, List<Role> roles) throws ServletException, IOException {
         AccountRepository accountRepository = new AccountRepository();
         AccountServices accountServices = new AccountServices(accountRepository);
 
@@ -280,9 +259,10 @@ public class ControllerServlet extends HttpServlet {
 
         List<String> roleIds = roleServices.getRoleOfAccount(name);
         String role = String.join(", ", roleIds);
+        LogRepository logRepository = new LogRepository();
 
+//        List<Log> log = logRepository.findLogbyAccount(name);
         Account account = accountServices.getAccount(name);
-        List<Role> roles = roleServices.getRoleName();
 
         for (Map.Entry<Account, String> entry : map.entrySet()) {
             Account acc = entry.getKey();
@@ -291,6 +271,7 @@ public class ControllerServlet extends HttpServlet {
             entry.setValue(rolesAsString);
         }
         HttpSession session = req.getSession(true);
+//        session.setAttribute("log", log);
         session.setAttribute("account", account);
         session.setAttribute("role", role);
         session.setAttribute("role_List", roles);
@@ -301,5 +282,136 @@ public class ControllerServlet extends HttpServlet {
         resp.sendRedirect("/dashboard.jsp");
     }
 
+    public void handleDeleteAccount(HttpServletRequest req, HttpServletResponse resp, String accountID) throws ServletException, IOException {
+        PrintWriter out = resp.getWriter();
+        if (accountServices.deleteAccount(accountID)) {
+            Map<Account, String> accountMap = RoleServices.gellAccountAndRole();
+            List<Role> roles = roleServices.getRoleName();
+            accessDashboard(req, resp, accountMap, roles);
+            actionDetail = new StringBuilder(actionDetail).append("Delete account: ").append(accountID).append(". \n").toString();
+        } else {
+            out.println("Error");
+        }
+    }
 
+    /**
+     * Add role
+     *
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
+    public void handleAddRole(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String roleID = req.getParameter("roleId");
+        String roleName = req.getParameter("roleName");
+        String description = req.getParameter("description");
+        String status = req.getParameter("status");
+        Role role = new Role();
+        role.setRoleId(roleID);
+        role.setRoleName(roleName);
+        role.setDescription(description);
+        role.setStatus(Byte.parseByte(status));
+        if (roleServices.addRole(role)) {
+            List<Role> roles = roleServices.getRoleName();
+            req.setAttribute("List", roles);
+            req.getRequestDispatcher("/dashboard.jsp").forward(req, resp);
+            actionDetail = new StringBuilder(actionDetail).append("Add role: ").append(roleID).append(". \n").toString();
+
+        } else {
+            resp.sendRedirect("/error.jsp");
+        }
+    }
+
+    public void handleUpdateAccount(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String accountId = req.getParameter("accountId");
+        String password = req.getParameter("password");
+        String fullName = req.getParameter("fullName");
+        String email = req.getParameter("email");
+        String phone = req.getParameter("phone");
+        String status = req.getParameter("status");
+        String[] newRoleIdArray = req.getParameterValues("role");
+        if (status.equalsIgnoreCase("-1")) {
+            handleDeleteAccount(req, resp, accountId);
+            return;
+        }
+        List<String> newRoleId = newRoleIdArray != null ? List.of(newRoleIdArray) : new ArrayList<>();
+
+        List<String> userRoles = roleServices.getRoleOfAccount(name);
+        if (accountServices.updateAccount(accountId, password, fullName, email, phone, Byte.parseByte(status))) {
+
+            actionDetail = new StringBuilder(actionDetail).append("Update account: ").append(accountId).append(". \n").toString();
+            List<String> userRole = roleServices.getRoleOfAccount(accountId);
+
+            List<String> newAdd = new ArrayList<>();
+            List<String> removedRole = new ArrayList<>();
+
+            for (String role : userRole) {
+                if (!newRoleId.contains(role)) {
+                    removedRole.add(role);
+                }
+            }
+            for (String role : newRoleId) {
+                if (!userRole.contains(role)) {
+                    newAdd.add(role);
+                }
+            }
+            for (String role : removedRole) {
+                accountServices.deleteGrantAccess(accountId, role);
+            }
+            for (String role : newAdd) {
+                accountServices.insertGrantAccess(accountId, role);
+            }
+
+            if (userRoles.contains("admin")) {
+                enable = "";
+                role = "admin";
+                Map<Account, String> accountMapUpdate = roleServices.gellAccountAndRole();
+                List<Role> roles = roleServices.getRoleName();
+
+                accessDashboard(req, resp, accountMapUpdate, roles);
+            } else {
+                enable = "disabled";
+                role = "user";
+                Map<Account, String> accountMapUpdate = roleServices.getRoleByAccountId(accountId);
+                List<Role> roles = roleServices.getRoleName();
+
+                userAccessDashboard(req, resp, accountMapUpdate, roles);
+            }
+        } else {
+            resp.sendRedirect("/error.jsp");
+        }
+    }
+
+    public void handleDeleteRole(HttpServletRequest req, HttpServletResponse resp, String roleId) throws ServletException, IOException {
+        if (roleServices.deleteRole(roleId)) {
+            Map<Account, String> accountMapUpdate = roleServices.gellAccountAndRole();
+            List<Role> roles = roleServices.getRoleName();
+
+            accessDashboard(req, resp, accountMapUpdate, roles);
+            actionDetail = new StringBuilder(actionDetail).append("Delete role: ").append(roleId).append(". \n").toString();
+        } else {
+            resp.sendRedirect("/error.jsp");
+        }
+    }
+
+    public void handleUpdateRole(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String roleId = req.getParameter("roleIdUpdate");
+        String roleName = req.getParameter("roleNameUpdate");
+        String description = req.getParameter("descriptionUpdate");
+        String status = req.getParameter("statusUpdate");
+        if (status.equalsIgnoreCase("-1")) {
+            handleDeleteRole(req, resp, roleId);
+            return;
+        }
+        if (roleServices.updateRole(roleName, description, Byte.parseByte(status), roleId)) {
+            Map<Account, String> accountMapUpdate = roleServices.gellAccountAndRole();
+            List<Role> roles = roleServices.getRoleName();
+
+            accessDashboard(req, resp, accountMapUpdate, roles);
+            actionDetail = new StringBuilder(actionDetail).append("Update role: ").append(roleId).append(". \n").toString();
+        } else {
+            resp.sendRedirect("/error.jsp");
+        }
+    }
 }

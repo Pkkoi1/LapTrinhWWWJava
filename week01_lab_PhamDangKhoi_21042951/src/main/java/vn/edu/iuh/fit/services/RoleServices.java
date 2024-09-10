@@ -42,4 +42,20 @@ public class RoleServices {
     public List<String> getRoleOfAccount(String accountId) {
         return roleRepository.getRoleOfAccount(accountId);
     }
+
+    public Role getRole(String roleId) {
+        return roleRepository.getRole(roleId);
+    }
+
+    public boolean addRole(Role role) {
+        return roleRepository.addRole(role);
+    }
+
+    public boolean updateRole(String name, String des, Byte status, String id) {
+        return roleRepository.updateRole(name, des, status, id);
+    }
+
+    public boolean deleteRole(String roleId) {
+        return roleRepository.deleteRole(roleId);
+    }
 }
