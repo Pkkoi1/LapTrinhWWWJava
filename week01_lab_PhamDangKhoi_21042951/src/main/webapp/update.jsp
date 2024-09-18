@@ -32,8 +32,7 @@
     <input type="hidden" name="action" value="update">
 
     <div>
-        <label>Account Name</label>
-        <input type="text" name="accountId" value="${account.accountId}"> </input>
+        <input type="hidden" name="accountId" value="${account.accountId}"> </input>
     </div>
     <div>
         <label>User Name</label>

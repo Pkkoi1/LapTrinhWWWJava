@@ -163,7 +163,7 @@ public class ControllerServlet extends HttpServlet {
                 session.invalidate();
                 logoutTime = new Date();
                 logRepository.addLog(name, loginTime, logoutTime, actionDetail);
-                resp.sendRedirect("/login.html");
+                resp.sendRedirect("/index.jsp");
                 break;
             case "register":
                 String accountIdNew = req.getParameter("accountId");
@@ -181,7 +181,7 @@ public class ControllerServlet extends HttpServlet {
                 String defaultRole = "user";
                 if (accountServices.addAccount(accountNew)) {
                     accountServices.insertGrantAccess(accountIdNew, defaultRole);
-                    resp.sendRedirect("/login.html");
+                    resp.sendRedirect("/index.jsp");
                 } else {
                     out.println("Error");
                 }
