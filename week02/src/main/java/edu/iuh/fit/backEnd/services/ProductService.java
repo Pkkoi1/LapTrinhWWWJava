@@ -6,6 +6,7 @@ import edu.iuh.fit.backEnd.models.Productimage;
 import edu.iuh.fit.backEnd.models.Productprice;
 import edu.iuh.fit.backEnd.repositories.ProductRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -79,4 +80,18 @@ public class ProductService {
         return images.get(random.nextInt(images.size()));
     }
 
+    public List<Productprice> getAllPrice() {
+        return productRepository.getAllPrice();
+    }
+
+    public void insertProductPrice(Productprice productprice) {
+        productRepository.insertProductPrice(productprice);
+    }
+
+    public void insertImage(Productimage productimage) {
+        productRepository.insertImage(productimage);
+    }
+    public Productprice getPriceByDate(Date date, double price) {
+        return productRepository.getPriceByDate(date, price);
+    }
 }

@@ -55,4 +55,13 @@ public class Productprice {
         this.note = note;
     }
 
+    public Productprice(ProductpriceId id, Product product, Double price, String note) {
+        this.id = id;
+        this.product = product;
+        this.price = price;
+        this.note = note;
+    }
+
+    public Productprice() {
+    }
 }

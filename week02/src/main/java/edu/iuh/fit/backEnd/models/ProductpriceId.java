@@ -52,4 +52,11 @@ public class ProductpriceId implements Serializable {
         return Objects.hash(priceDateTime, productId);
     }
 
+    public ProductpriceId(Long productId, Date priceDateTime) {
+        this.productId = productId;
+        this.priceDateTime = priceDateTime;
+    }
+
+    public ProductpriceId() {
+    }
 }

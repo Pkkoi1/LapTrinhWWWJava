@@ -58,4 +58,14 @@ public class Productimage {
         this.alternative = alternative;
     }
 
+    public Productimage(Product product, String path, String alternative) {
+        this.product = product;
+        this.path = path;
+        this.alternative = alternative;
+    }
+     public Productimage() {
+
+
+     }
+
 }

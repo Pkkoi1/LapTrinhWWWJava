@@ -59,7 +59,7 @@
         <div class="product_item">
             <div>
                 <% if (randomImage != null) { %>
-                <img src="<%= randomImage.getPath() %>" alt="<%= randomImage.getAlternative() %>">
+                <img src="<%= randomImage.getPath() %>" srcset="<%= randomImage.getAlternative() %>">
                 <% } %>
             </div>
             <div id="product_detail">

@@ -13,6 +13,7 @@ import jakarta.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -90,6 +91,42 @@ public class ProductRepository {
         return em.createQuery(query, Productprice.class)
                 .setParameter("productId", productId)
                 .getResultList();
+    }
+
+    public List<Productprice> getAllPrice() {
+        return em.createQuery("SELECT p FROM Productprice p", Productprice.class)
+                .getResultList();
+    }
+
+    public void insertProductPrice(Productprice productprice) {
+        try {
+            et.begin();
+            em.persist(productprice);
+            et.commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            et.rollback();
+        }
+    }
+
+    public void insertImage(Productimage productimage) {
+        try {
+            et.begin();
+            em.persist(productimage);
+            et.commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            et.rollback();
+        }
+    }
+
+    public Productprice getPriceByDate(Date date, double price)
+    {
+        String query = "SELECT p FROM Productprice p WHERE p.id.priceDateTime = :date AND p.price = :price";
+        return em.createQuery(query, Productprice.class)
+                .setParameter("date", date)
+                .setParameter("price", price)
+                .getSingleResult();
     }
 
     public void close() {
