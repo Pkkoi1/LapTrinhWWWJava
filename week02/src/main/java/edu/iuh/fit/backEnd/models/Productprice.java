@@ -1,12 +1,17 @@
 package edu.iuh.fit.backEnd.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "productprice")
-public class Productprice {
+public class Productprice implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @EmbeddedId
     private ProductpriceId id;
 
@@ -14,12 +19,12 @@ public class Productprice {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "product_id", nullable = false)
+    @JsonBackReference
     private Product product;
 
     @Column(name = "price", nullable = false)
     private Double price;
 
-    @Lob
     @Column(name = "note")
     private String note;
 
@@ -31,13 +36,13 @@ public class Productprice {
         this.id = id;
     }
 
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
+//    public Product getProduct() {
+//        return product;
+//    }
+//
+//    public void setProduct(Product product) {
+//        this.product = product;
+//    }
 
     public Double getPrice() {
         return price;

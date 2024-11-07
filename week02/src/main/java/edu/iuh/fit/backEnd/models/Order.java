@@ -5,6 +5,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
+import java.util.Set;
 
 @Entity
 @Table(name = "orders")
@@ -26,6 +27,10 @@ public class Order {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "cust_id", nullable = false)
     private Customer cust;
+
+
+    @OneToMany(mappedBy = "order")
+    private Set<Orderdetail> orderdetails;
 
     public Long getId() {
         return id;
@@ -59,4 +64,11 @@ public class Order {
         this.cust = cust;
     }
 
+    public Set<Orderdetail> getOrderdetails() {
+        return orderdetails;
+    }
+
+    public void setOrderdetails(Set<Orderdetail> orderdetails) {
+        this.orderdetails = orderdetails;
+    }
 }

@@ -9,6 +9,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Table(name = "employee")
@@ -41,6 +42,9 @@ public class Employee {
     @ColumnDefault("1")
     @Column(name = "status", nullable = false)
     private EmloyeeStatus status;
+
+    @OneToMany(mappedBy = "emp")
+    private Set<Order> orders;
 
     public Long getId() {
         return id;

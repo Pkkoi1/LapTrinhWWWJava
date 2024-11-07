@@ -18,6 +18,16 @@ public class Orderdetail {
     @Column(name = "note")
     private String note;
 
+    @ManyToOne
+    @MapsId("orderId")
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
+
+    @ManyToOne
+    @MapsId("productId")
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
+
     public OrderdetailId getId() {
         return id;
     }

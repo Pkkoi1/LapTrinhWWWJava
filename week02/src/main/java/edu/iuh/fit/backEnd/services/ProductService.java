@@ -94,4 +94,11 @@ public class ProductService {
     public Productprice getPriceByDate(Date date, double price) {
         return productRepository.getPriceByDate(date, price);
     }
+    public String findPriceNote(Long id, Date date, Double price) {
+        return productRepository.findPriceNote(id, date, price);
+    }
+
+    public Productprice findPrice(Long id, Double price) {
+        return productRepository.findPrice(id, price);
+    }
 }

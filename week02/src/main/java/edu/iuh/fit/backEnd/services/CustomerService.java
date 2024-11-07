@@ -10,7 +10,8 @@ public class CustomerService {
 
     private CustomerRepository customerRepository;
 
-    public CustomerService(){
+    public CustomerService()
+    {
         customerRepository = new CustomerRepository();
     }
 

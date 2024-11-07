@@ -2,6 +2,8 @@ package edu.iuh.fit.backEnd.models;
 
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "customer")
 public class Customer {
@@ -21,6 +23,9 @@ public class Customer {
 
     @Column(name = "address")
     private String address;
+
+    @OneToMany(mappedBy = "cust")
+    private Set<Order> orders;
 
     public Long getId() {
         return id;

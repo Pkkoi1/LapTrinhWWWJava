@@ -1,4 +1,4 @@
-package edu.iuh.fit.backEnd.api;
+package edu.iuh.fit.backEnd.Resource;
 
 
 import edu.iuh.fit.backEnd.models.Customer;

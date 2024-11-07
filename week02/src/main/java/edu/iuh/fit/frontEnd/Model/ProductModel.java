@@ -22,17 +22,21 @@ public class ProductModel {
     private final ProductService productService = new ProductService();
 
     public void insertProduct(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        List<Product> products = productService.getAll();
-//        final Long proId = (long) products.size() + 1;
+
         String name = request.getParameter("name");
         String description = request.getParameter("description");
         String unit = request.getParameter("unit");
         String manufacturer = request.getParameter("manufacturer");
         String status = request.getParameter("status");
-
+        String[] priceParts = new String[0];
         String priceParam = request.getParameter("price");
-        String[] priceParts = priceParam.split(";");
-        String priceDateTime = priceParts[0];
+        String price = "";
+        String priceDateTime = "";
+        if (priceParam != null && !priceParam.isEmpty()) {
+            priceParts = priceParam.split(";");
+            price = priceParts[1];
+            priceDateTime = priceParts[0];
+        }
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
         Date priceDate = null;
         try {
@@ -40,7 +44,7 @@ public class ProductModel {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        String price = priceParts[1];
+
         String priceNew = request.getParameter("priceNew");
         String note = request.getParameter("noteNew");
         String finalPrice = "";
@@ -48,29 +52,24 @@ public class ProductModel {
         Product product = new Product(name, description, unit, manufacturer, ProductStatus.valueOf(status));
         productService.insertProduct(product);
 
-
         Date date = new Date();
         Long proId = product.getId();
         ProductpriceId productpriceId = new ProductpriceId();
 
-
-        if(priceNew != null && !priceNew.isEmpty()){
+        if (priceNew != null && !priceNew.isEmpty()) {
             finalPrice = priceNew;
             productpriceId.setProductId(proId);
             productpriceId.setPriceDateTime(date);
 
             Productprice productprice = new Productprice(productpriceId, product, Double.parseDouble(finalPrice), note);
             productService.insertProductPrice(productprice);
-        }else{
+        } else {
             finalPrice = price;
             productpriceId.setProductId(proId);
             productpriceId.setPriceDateTime(priceDate);
             Productprice productprice = new Productprice(productpriceId, product, Double.parseDouble(finalPrice), note);
             productService.insertProductPrice(productprice);
-
-
         }
-
 
         String imgFile = request.getParameter("imageFile");
         String imgURL = request.getParameter("imageUrl");
@@ -78,8 +77,7 @@ public class ProductModel {
         List<String> list = new ArrayList<>();
         if (imgFile != null && !imgFile.isEmpty()) {
             list.add(imgFile);
-        }else
-        if (imgURL != null && !imgURL.isEmpty()) {
+        } else if (imgURL != null && !imgURL.isEmpty()) {
             list.add(imgURL);
         }
         String alt = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmGS8dZ2pWxkEKMhN11hkrU2SiFTnyzrHRcg&s";
@@ -104,5 +102,7 @@ public class ProductModel {
         productService.updateStatus(id, ProductStatus.ACTIVE);
         response.sendRedirect("product.jsp");
     }
+
+
 
 }

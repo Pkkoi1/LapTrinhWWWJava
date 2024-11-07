@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Cpmpany</title>
+</head>
+<body>
+<h1>Edit Company</h1>
+<form action="/companies/" method="get">
+    <button type="submit">Back</button>
+</form>
+<form action="#" th:action="@{/companies/update}" th:object="${company}" method="post">
+    <input type="hidden" name="id" th:field="${company.id}">
+    <table>
+        <tr>
+            <td><label for="name">Name:</label></td>
+            <td><input type="text" id="name" name="name" th:field="*{compName}"></td>
+        </tr>
+        <tr>
+            <td><label for="email">Email:</label></td>
+            <td><input type="text" id="email" name="email" th:field="*{email}"></td>
+        </tr>
+        <tr>
+            <td><label for="phone">Phone number:</label></td>
+            <td><input type="text" id="phone" name="phone" th:field="*{phone}"></td>
+        </tr>
+        <tr>
+            <td><label>Address:</label></td>
+            <td><input type="hidden" th:field="${company.address.id}"></td>
+            <td><input type="text" th:field="${company.address.number}"></td>
+            <td><input type="text" th:field="${company.address.zipcode}"></td>
+            <td><input type="text" th:field="${company.address.street}"></td>
+            <td><input type="text" th:field="${company.address.city}"></td>
+            <td>
+                <select th:field="${company.address.country}">
+                    <option th:each="Country : ${country}"
+                            th:value="${Country.getAlpha2()}"
+                            th:text="${Country.getName()}">
+                    </option>
+                </select>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align: center;">
+                <input type="submit" value="Edit Company">
+            </td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>

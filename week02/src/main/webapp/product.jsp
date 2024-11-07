@@ -5,7 +5,13 @@
 <%@ page import="java.util.List" %>
 <%@ page import="edu.iuh.fit.backEnd.models.Productprice" %>
 <html>
+<%--UTF-8--%>
+
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   
     <title>Product</title>
 
     <style>
@@ -58,9 +64,13 @@
         %>
         <div class="product_item">
             <div>
-                <% if (randomImage != null) { %>
-                <img src="<%= randomImage.getPath() %>" srcset="<%= randomImage.getAlternative() %>">
-                <% } %>
+                <%
+                    String placeholderImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmGS8dZ2pWxkEKMhN11hkrU2SiFTnyzrHRcg&s";
+                    String imagePath = (randomImage != null && randomImage.getPath() != null && !randomImage.getPath().isEmpty())
+                            ? randomImage.getPath()
+                            : placeholderImage;
+                %>
+                <img src="<%= imagePath %>">
             </div>
             <div id="product_detail">
                 <p><strong>Name:</strong> <%= product.getName() %></p>
@@ -80,7 +90,7 @@
             </div>
             <div id="product_actionButtons">
                 <div>
-                    <a href="<%= edit_string %>">Update</a>
+                    <a href="editProduct.jsp">Update</a>
                 </div>
                 <div>
                     <button onclick= "window.location.href='<%=delete_string%>';"><a href=<%=delete_string%>><%= product.getStatus().getValue() == 1 ? "Delete": "Active"%></a></button>

@@ -80,6 +80,21 @@ public class ProductRepository {
         return Optional.ofNullable(em.find(Product.class, id));
     }
 
+    public String findPriceNote(Long id, Date date, Double price) {
+        String query = "SELECT p.note FROM Productprice p WHERE p.product.id = :id AND p.id.priceDateTime = :date AND p.price = :price";
+        return em.createQuery(query, String.class)
+                .setParameter("id", id)
+                .setParameter("date", date)
+                .getSingleResult();
+    }
+
+    public Productprice findPrice(Long id, Double price) {
+        String query = "SELECT p FROM Productprice p WHERE p.product.id = :id AND p.price = :price";
+        return em.createQuery(query, Productprice.class)
+                .setParameter("id", id)
+                .setParameter("price", price)
+                .getSingleResult();
+    }
     public List<Productimage> getProductImages(long productId) {
         return em.createNamedQuery("Productimage.findByProduct_Id", Productimage.class)
                 .setParameter("id", productId)

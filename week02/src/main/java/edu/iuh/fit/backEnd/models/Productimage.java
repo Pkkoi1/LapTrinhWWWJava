@@ -1,23 +1,27 @@
 package edu.iuh.fit.backEnd.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+
+import java.io.Serializable;
 
 @Entity
 @Table(name = "productimage")
 @NamedQueries({
         @NamedQuery(name = "Productimage.findByProduct_Id", query = "select p from Productimage p where p.product.id = :id")
 })
-public class Productimage {
+
+public class Productimage implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "image_id", nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
+    @JsonBackReference
     private Product product;
 
     @Column(name = "path", nullable = false)
@@ -34,13 +38,13 @@ public class Productimage {
         this.id = id;
     }
 
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
+//    public Product getProduct() {
+//        return product;
+//    }
+//
+//    public void setProduct(Product product) {
+//        this.product = product;
+//    }
 
     public String getPath() {
         return path;

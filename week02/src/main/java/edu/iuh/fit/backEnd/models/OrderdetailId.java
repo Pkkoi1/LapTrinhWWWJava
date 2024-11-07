@@ -10,8 +10,11 @@ import java.util.Objects;
 @Embeddable
 public class OrderdetailId implements Serializable {
     private static final long serialVersionUID = 7668360659475214011L;
+
+
     @Column(name = "order_id", nullable = false)
     private Long orderId;
+
 
     @Column(name = "product_id", nullable = false)
     private Long productId;
