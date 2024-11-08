@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Jobs</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<h1>About company</h1>
+<div>
+    <p>Company name: <span th:text="${company.compName}"></span></p>
+    <p>Email: <span th:text="${company.email}"></span></p>
+    <p>Phone: <span th:text="${company.phone}"></span></p>
+    <p>Web URL: <span th:text="${company.webUrl}"></span></p>
+    <p>About: <span th:text="${company.about}"></span></p>
+    <p>Address: <span
+            th:text="${company.address.street} +' ,' + ${company.address.city} +' ,' + ${company.address.country.getName()}"></span>
+    </p>
+</div>
+<h1>Jobs</h1>
+<form th:action="@{show_add_form/{id}(id=${company.id})}" method="get" style="display:inline;">
+    <button type="submit">Add</button>
+</form>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Job Title</th>
+        <th>Job Description</th>
+        <th>Skills</th>
+        <th>Action</th>
+        <th>View candidate suitable</th>
+    </tr>
+    <tr th:each="job, iStat : ${jobPage.content}">
+        <td th:text="${job.id}"></td>
+        <td th:text="${job.jobName}"></td>
+        <td th:text="${job.jobDesc}"></td>
+        <td>
+            <ul>
+                <li th:each="skill : ${job.getJobSkills()}"
+                    th:text="${skill.skill.skillName} + ' ,' + ${skill.skill.type} + ': ' + ${skill.skillLevel}"></li>
+            </ul>
+        </td>
+        <td>
+            <a th:href="@{'/jobs/edit/' + ${job.id}}">Edit</a>
+        </td>
+        <td>
+            <form th:action="@{/jobs/show_candidate_matching/{id}/{jobID}(id=${company.id}, jobID=${job.id})}"
+                  method="get"
+                  style="display:inline;">
+                <button type="submit">View</button>
+            </form>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

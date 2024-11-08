@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 @Controller
-@RequestMapping("/companies")
 public class CompanyController {
 
     @Autowired
@@ -33,7 +32,7 @@ public class CompanyController {
     @Autowired
     private AddressRepository addressRepository;
 
-    @GetMapping(value = {"", "/"})
+    @GetMapping("/companies")
     public String showListCompany(Model model, @RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size, Optional<String> search) {
         int currentPage = page.orElse(1);
         int pageSize = size.orElse(10);
@@ -57,7 +56,7 @@ public class CompanyController {
         return "companies/list";
     }
 
-    @GetMapping("/show_edit_form/{id}")
+    @GetMapping("/companies/show_edit_form/{id}")
     public ModelAndView edit(@PathVariable("id") long id) {
         ModelAndView mav = new ModelAndView();
         Optional<Company> company = companyRespository.findById(id);
@@ -73,7 +72,7 @@ public class CompanyController {
         return mav;
     }
 
-    @GetMapping("/show_add_form")
+    @GetMapping("/companies/show_add_form")
     public ModelAndView showAddForm() {
         ModelAndView mav = new ModelAndView();
         Company company = new Company();
@@ -86,14 +85,14 @@ public class CompanyController {
         return mav;
     }
 
-    @PostMapping("update")
+    @PostMapping("/companies/update")
     public String updateCompany(@ModelAttribute("company") Company company, BindingResult result, Model model) {
         addressRepository.save(company.getAddress());
         companyRespository.save(company);
         return "redirect:/companies";
     }
 
-    @PostMapping("/save")
+    @PostMapping("/companies/save")
     public String saveCompany(@ModelAttribute("company") Company company, BindingResult result, Model model) {
         addressRepository.save(company.getAddress());
         companyRespository.save(company);

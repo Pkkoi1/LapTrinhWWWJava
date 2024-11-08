@@ -45,4 +45,10 @@ public class CandidateService {
         return candidateRepository.findByKey(skillName, pageable);
     }
 
+    public Page<Candidate> findMatchingCandidates(Long jobId, int page, int size, String sortBy, String sortDirection) {
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return candidateRepository.findMatchingCandidates(jobId, pageable);
+    }
+
 }

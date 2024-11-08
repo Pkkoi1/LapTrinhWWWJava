@@ -107,11 +107,14 @@
         <td>
             <ul>
                 <li th:each="job : ${company.getJobs()}"
-                    th:text="${job.jobName + ' :' + job.jobDesc}"></li>
+                    th:text="${job.jobName}"></li>
             </ul>
         </td>
         <td>
-            <form th:action="@{show_edit_form/{id}(id=${company.id})}" method="get" style="display:inline;">
+            <form th:action="@{/jobs/{id}(id=${company.id})}" method="get" style="display:inline;">
+                <button type="submit">Detail</button>
+            </form>
+            <form th:action="@{/companies/show_edit_form/{id}(id=${company.id})}" method="get" style="display:inline;">
                 <button type="submit">Edit</button>
             </form>
             <form th:action="@{'/delete/' + ${company.id}}" method="post" style="display:inline;">

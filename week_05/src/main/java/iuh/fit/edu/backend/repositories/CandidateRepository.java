@@ -22,5 +22,10 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long> {
             "UPPER(c.email) LIKE CONCAT('%', UPPER(?1), '%') ")
     Page<Candidate> findByKey(String ket, Pageable pageable);
 
-
+    @Query("SELECT c FROM Candidate c JOIN c.candidateSkills cs JOIN JobSkill js ON cs.skill.id = js.skill.id " +
+            "WHERE js.job.id = :jobId AND cs.skillLevel >= js.skillLevel " +
+            "GROUP BY c.id " +
+            "HAVING COUNT(cs.id) > 0 " +
+            "ORDER BY COUNT(cs.id) DESC")
+    Page<Candidate> findMatchingCandidates(Long jobId, Pageable pageable);
 }

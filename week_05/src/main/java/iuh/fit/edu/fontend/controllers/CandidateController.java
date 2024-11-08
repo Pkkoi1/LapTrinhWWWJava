@@ -2,9 +2,12 @@ package iuh.fit.edu.fontend.controllers;
 
 import com.neovisionaries.i18n.CountryCode;
 import iuh.fit.edu.backend.models.Candidate;
+import iuh.fit.edu.backend.models.Job;
 import iuh.fit.edu.backend.repositories.AddressRepository;
 import iuh.fit.edu.backend.repositories.CandidateRepository;
+import iuh.fit.edu.backend.repositories.JobRepository;
 import iuh.fit.edu.backend.services.CandidateService;
+import iuh.fit.edu.backend.services.JobService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,7 +25,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Controller
-@RequestMapping("/candidates")
 public class CandidateController {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(CandidateController.class);
     @Autowired
@@ -33,8 +35,13 @@ public class CandidateController {
     @Autowired
     private AddressRepository addressRepository;
 
+    @Autowired
+    private JobRepository jobRepository;
+    @Autowired
+    private JobService jobService;
 
-    @GetMapping(value = {"", "/"})
+
+    @GetMapping("/candidates")
     public String showCandidateListPaging(Model model, @RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size, Optional<String> search) {
         int currentPage = page.orElse(1);
         int pageSize = size.orElse(10);
@@ -59,7 +66,7 @@ public class CandidateController {
     }
 
 
-    @GetMapping("/show_edit_form/{id}")
+    @GetMapping("/candidates/show_edit_form/{id}")
     public ModelAndView edit(@PathVariable("id") long id) {
         ModelAndView modelAndView = new ModelAndView();
         Optional<Candidate> opt = candidateRepository.findById(id);
@@ -77,21 +84,21 @@ public class CandidateController {
         return modelAndView;
     }
 
-    @PostMapping("/update")
+    @PostMapping("/candidates/update")
     public String updateCandidate(@ModelAttribute("candidate") Candidate candidate, BindingResult result, Model model) {
         addressRepository.save(candidate.getAddress());
         candidateRepository.save(candidate);
         return "redirect:/candidates";
     }
 
-    @PostMapping("/save")
+    @PostMapping("/candidates/save")
     public String saveCandidate(@ModelAttribute("candidate") Candidate candidate, BindingResult result, Model model) {
         addressRepository.save(candidate.getAddress());
         candidateRepository.save(candidate);
         return "redirect:/candidates";
     }
 
-    @GetMapping("/show_add_form")
+    @GetMapping("/candidates/show_add_form")
     public ModelAndView showAddForm() {
         ModelAndView modelAndView = new ModelAndView();
         Candidate candidate = new Candidate();
@@ -101,5 +108,25 @@ public class CandidateController {
         return modelAndView;
     }
 
+    @GetMapping("/candidates/show_job_match/{id}")
+    public String showJobMatch(@PathVariable("id") Long id, Model model, @RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
+
+        int currentPage = page.orElse(1);
+        int pageSize = size.orElse(10);
+        Page<Job> jobPage = jobService.findMatchingJobs(id, currentPage - 1, pageSize, "id", "asc");
+        Candidate candidate = candidateRepository.findById(id).get();
+        model.addAttribute("candidate", candidate);
+        model.addAttribute("jobPage", jobPage);
+        int totalPages = jobPage.getTotalPages();
+        if (totalPages > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("pageNumbers", pageNumbers);
+        }
+
+
+        return "jobs/jobMatching";
+    }
 
 }

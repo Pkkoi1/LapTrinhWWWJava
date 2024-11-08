@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Job</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<h1>Job Matching</h1>
+<div>
+    <p>Candidate Name: <span th:text="${candidate.fullName}"></span></p>
+</div>
+<table>
+    <tr>
+        <th>Job Title</th>
+        <th>Job Description</th>
+        <th>Skills</th>
+        <th>Action</th>
+    </tr>
+    <tr th:each="job, iStat : ${jobPage.content}">
+        <td th:text="${job.jobName}"></td>
+        <td th:text="${job.jobDesc}"></td>
+        <td>
+            <ul>
+                <li th:each="skill : ${job.getJobSkills()}"
+                    th:text="${skill.skill.skillName} + ' ,' + ${skill.skill.type} + ': ' + ${skill.skillLevel}"></li>
+            </ul>
+        </td>
+        <td>
+            <form th:action="@{/jobs/match/{jobId}/{candidateId}(jobId=${job.id}, candidateId=${candidate.id})}"
+                  method="post" style="display:inline;">
+                <button type="submit">Match</button>
+            </form>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
