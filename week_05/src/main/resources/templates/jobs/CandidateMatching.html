@@ -124,7 +124,8 @@
                     th:text="${skill.skill.skillName +' :' + skill.skillLevel}"></li>
             </ul>
         <td>
-            <form th:action="@{/candidates/send_mail/{id}(id=${candidate.id})}" method="get"
+            <form th:action="@{/jobs/{id}/{jobId}/{candidateId}/send-email(jobId = ${job.id}, candidateId = ${candidate.id}, id = ${company.id})}"
+                  method="post"
                   style="display:inline;">
                 <button type="submit">Aplly
                 </button>

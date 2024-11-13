@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -37,7 +39,7 @@ public class Candidate {
     private Address address;
 
     @OneToMany(mappedBy = "can")
-    private Set<CandidateSkill> candidateSkills = new LinkedHashSet<>();
+    private List<CandidateSkill> candidateSkills = new ArrayList<>();
 
     @OneToMany(mappedBy = "can")
     private Set<Experience> experiences = new LinkedHashSet<>();

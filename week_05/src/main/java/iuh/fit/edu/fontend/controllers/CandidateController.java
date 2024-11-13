@@ -1,11 +1,12 @@
 package iuh.fit.edu.fontend.controllers;
 
 import com.neovisionaries.i18n.CountryCode;
+import iuh.fit.edu.backend.enums.skillLevel;
+import iuh.fit.edu.backend.ids.CandidateSkillId;
 import iuh.fit.edu.backend.models.Candidate;
+import iuh.fit.edu.backend.models.CandidateSkill;
 import iuh.fit.edu.backend.models.Job;
-import iuh.fit.edu.backend.repositories.AddressRepository;
-import iuh.fit.edu.backend.repositories.CandidateRepository;
-import iuh.fit.edu.backend.repositories.JobRepository;
+import iuh.fit.edu.backend.repositories.*;
 import iuh.fit.edu.backend.services.CandidateService;
 import iuh.fit.edu.backend.services.JobService;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,12 @@ public class CandidateController {
     private JobRepository jobRepository;
     @Autowired
     private JobService jobService;
+
+    @Autowired
+    private SkillRepository skillRepository;
+
+    @Autowired
+    private CandidateSkillRepository candidateSkillRepository;
 
 
     @GetMapping("/candidates")
@@ -80,7 +87,6 @@ public class CandidateController {
             modelAndView.addObject("country", sortedCountries);
             modelAndView.setViewName("candidates/edit");
         }
-
         return modelAndView;
     }
 
@@ -93,8 +99,20 @@ public class CandidateController {
 
     @PostMapping("/candidates/save")
     public String saveCandidate(@ModelAttribute("candidate") Candidate candidate, BindingResult result, Model model) {
+        candidate.getCandidateSkills().removeIf(candidateSkill -> candidateSkill.getSkill().getId() == null);
         addressRepository.save(candidate.getAddress());
         candidateRepository.save(candidate);
+        for (CandidateSkill candidateSkill : candidate.getCandidateSkills()) {
+            if (candidateSkill.getSkill() != null) {
+                CandidateSkillId canSkID = new CandidateSkillId();
+                canSkID.setCanId(candidate.getId());
+                canSkID.setSkillId(candidateSkill.getSkill().getId());
+                candidateSkill.setId(canSkID);
+                candidateSkill.setCan(candidate);
+            }
+        }
+        candidateSkillRepository.saveAll(candidate.getCandidateSkills());
+
         return "redirect:/candidates";
     }
 
@@ -104,6 +122,9 @@ public class CandidateController {
         Candidate candidate = new Candidate();
         modelAndView.addObject("candidate", candidate);
         modelAndView.addObject("country", CountryCode.values());
+        modelAndView.addObject("skills", skillRepository.findAll());
+        modelAndView.addObject("skillLevels", skillLevel.values());
+
         modelAndView.setViewName("candidates/add");
         return modelAndView;
     }

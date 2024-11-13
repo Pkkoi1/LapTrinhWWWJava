@@ -3,7 +3,6 @@ package iuh.fit.se.frontEnd;
 import iuh.fit.se.backEnd.Models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -24,6 +23,7 @@ public class UserController {
     @GetMapping(value = {"/", ""})
     public ModelAndView showListUser() {
         ModelAndView modelAndView = new ModelAndView("Users/list");
+
         List<User> users = userService.findAll();
         for(User u: users)
         {
@@ -32,5 +32,11 @@ public class UserController {
         modelAndView.addObject("users", users);
 
         return modelAndView;
+    }
+
+    @GetMapping("/login")
+    public String login() {
+
+        return "sendRedirect:/user";
     }
 }

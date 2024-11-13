@@ -8,6 +8,7 @@ import iuh.fit.edu.backend.models.*;
 import iuh.fit.edu.backend.repositories.*;
 import iuh.fit.edu.backend.services.CandidateService;
 import iuh.fit.edu.backend.services.CompanyService;
+import iuh.fit.edu.backend.services.EmailService;
 import iuh.fit.edu.backend.services.JobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -40,7 +41,7 @@ public class jobController {
     @Autowired
     private CompanyRespository companyRespository;
     @Autowired
-    private AddressRepository addressRepository;
+    private EmailService emailService;
     @Autowired
     private SkillRepository skillRepository;
     @Autowired
@@ -109,10 +110,18 @@ public class jobController {
         Company company = companyRespository.findById(id).get();
 
         model.addAttribute("company", company);
-
+        model.addAttribute("job", jobRepository.findById(jobID).get());
         List<Candidate> candidates = candidateService.findMatchingCandidates(jobID);
         System.out.println(candidates.size());
         model.addAttribute("candidates", candidates);
         return "jobs/CandidateMatching";
+    }
+
+    @PostMapping("/{id}/{jobId}/{candidateId}/send-email")
+    public String sendEmail(@PathVariable("jobId") Long jobId, @PathVariable("candidateId") Long candidateId, Model model) {
+        Job job = jobService.findById(jobId);
+        Candidate candidate = candidateRepository.findById(candidateId).get();
+        emailService.sendEmail(candidate, job);
+        return "redirect:/jobs/{id}";
     }
 }

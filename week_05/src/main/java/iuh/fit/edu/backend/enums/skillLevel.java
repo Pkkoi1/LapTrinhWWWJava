@@ -1,15 +1,15 @@
 package iuh.fit.edu.backend.enums;
 
 public enum skillLevel {
-    MASTER(5),
+    MASTER(0),
 
-    PROFESSIONAL(4),
+    PROFESSIONAL(1),
 
-    ADVANCED(3),
+    ADVANCED(2),
 
-    IMTERMEDIATE(2),
+    INTERMEDIATE(3),
 
-    BEGINER(1);
+    BEGINNER(4);
 
     skillLevel(int value) {
     }

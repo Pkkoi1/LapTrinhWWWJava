@@ -16,7 +16,7 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     Page<Job> findCompanyJobs(Long key, org.springframework.data.domain.Pageable pageable);
 
     @Query(" select j from Job j inner join j.jobSkills jobSkills " +
-            "where jobSkills.skillLevel >= ?1 and jobSkills.skill.skillName = ?2")
+            "where jobSkills.skillLevel <= ?1 and jobSkills.skill.skillName = ?2")
     List<Job> findJobsBySkillLevelAndSkillName(skillLevel skillLevel, String skillName);
 
 }

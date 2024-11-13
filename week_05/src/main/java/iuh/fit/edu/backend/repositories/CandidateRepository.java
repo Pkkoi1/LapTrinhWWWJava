@@ -25,7 +25,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long> {
 
     @Query("""
             select c from Candidate c inner join c.candidateSkills candidateSkills
-            where candidateSkills.skillLevel >= ?1 and candidateSkills.skill.skillName = ?2
+            where candidateSkills.skillLevel <= ?1 and candidateSkills.skill.skillName = ?2
             """)
     List<Candidate> findMatchingCandidates(skillLevel skillLevel, String skillName);
 }

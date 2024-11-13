@@ -5,7 +5,7 @@
     <title>Home</title>
 </head>
 <body>
-<form action="/user" method="get">
+<form th:action="@{/user/login}" method="get">
     <table>
         <tr>
             <th>Email:</th>
@@ -16,10 +16,15 @@
         <tr>
             <th>Password:</th>
             <th>
-                <input type="text" name="email">
+                <input type="text" name="password">
             </th>
         </tr>
+        <tr>
+            <th>
+                <input type="submit" value="Login">
+            </th>
     </table>
+    <input type="hidden" >
 </form>
 </body>
 </html>

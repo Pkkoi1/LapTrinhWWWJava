@@ -38,6 +38,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 //for country code
     implementation 'com.neovisionaries:nv-i18n:1.29'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 //For database REST
     implementation 'org.springframework.data:spring-data-rest-core:4.1.4'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
