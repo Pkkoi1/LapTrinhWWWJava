@@ -3,6 +3,7 @@ package iuh.fit.edu.fontend.controllers;
 
 import iuh.fit.edu.backend.enums.skillLevel;
 import iuh.fit.edu.backend.enums.skillType;
+import iuh.fit.edu.backend.ids.JobSkillId;
 import iuh.fit.edu.backend.models.*;
 import iuh.fit.edu.backend.repositories.*;
 import iuh.fit.edu.backend.services.CandidateService;
@@ -42,6 +43,8 @@ public class jobController {
     private AddressRepository addressRepository;
     @Autowired
     private SkillRepository skillRepository;
+    @Autowired
+    private JobSkillRepository jobSkillRepository;
 
     @GetMapping("/{id}")
     public String showListCompany(Model model, @RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size, @PathVariable("id") Long id) {
@@ -65,73 +68,51 @@ public class jobController {
 
     @GetMapping("/show_add_form/{id}")
     public ModelAndView showAddForm(@PathVariable("id") Long id) {
-        ModelAndView mav = new ModelAndView();
-        Optional<Company> company = companyRespository.findById(id);
+        ModelAndView mav = new ModelAndView("jobs/add");
         Job job = new Job();
-        // Initialize jobSkills with empty JobSkill objects
-        for (int i = 0; i < 5; i++) {
-            JobSkill jobSkill = new JobSkill();
-            jobSkill.setJob(job);
-            job.getJobSkills().add(jobSkill);
-        }
-
-        List<Skill> skills = skillRepository.findAll().stream()
-                .sorted(Comparator.comparing(Skill::getSkillName))
-                .collect(Collectors.toList());
-        mav.addObject("skills", skills);
+        mav.addObject("company", companyRespository.findById(id).get());
+        mav.addObject("skills", skillRepository.findAll());
+        mav.addObject("skillLevels", skillLevel.values());
         mav.addObject("job", job);
-
-        if (company.isPresent()) {
-            Company company1 = company.get();
-            mav.addObject("company", company1);
-            List<skillLevel> skillLevels = Arrays.stream(skillLevel.values())
-                    .collect(Collectors.toList());
-
-            List<skillType> skillTypes = Arrays.stream(skillType.values())
-                    .collect(Collectors.toList());
-            mav.addObject("skillTypes", skillTypes);
-            mav.addObject("skillLevels", skillLevels);
-            mav.setViewName("jobs/add");
-        }
         return mav;
     }
 
     @PostMapping("/save/{id}")
     public String saveJob(@PathVariable("id") Long companyId, @ModelAttribute("job") Job job, BindingResult result, Model model) {
+        job.getJobSkills().removeIf(jobSkill -> jobSkill.getSkill().getId() == null);
         Optional<Company> companyOptional = companyRespository.findById(companyId);
         if (companyOptional.isPresent()) {
-            job.setCompany(companyOptional.get());
-            jobRepository.save(job);
+//            job.setCompany(companyOptional.get());
+            Job job1 = new Job();
+            job1.setJobSkills(job.getJobSkills());
+            job1.setCompany(companyOptional.get());
+            job1.setJobName(job.getJobName());
+            job1.setJobDesc(job.getJobDesc());
+            jobRepository.save(job1);
+            for (JobSkill jobSkill : job1.getJobSkills()) {
+                if (jobSkill.getSkill().getId() != null) {
+                    JobSkillId jobSkillId = new JobSkillId();
+                    jobSkillId.setJobId(job1.getId());
+                    jobSkillId.setSkillId(jobSkill.getSkill().getId());
+                    jobSkill.setId(jobSkillId);
+                    jobSkill.setJob(job1);
+                }
+            }
+            jobSkillRepository.saveAll(job1.getJobSkills());
         }
         return "redirect:/jobs/{id}";
     }
 
     @GetMapping("/show_candidate_matching/{id}/{jobID}")
-    public String showCandidateMatching(Model model, @RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size, @PathVariable("id") Long id, @PathVariable("jobID") Long jobID, Optional<String> search) {
-        int currentPage = page.orElse(1);
-        int pageSize = size.orElse(10);
+    public String showCandidateMatching(Model model, @PathVariable("id") Long id, @PathVariable("jobID") Long jobID) {
 
         Company company = companyRespository.findById(id).get();
 
         model.addAttribute("company", company);
 
-        Page<Candidate> candidatePage;
-        if (search.isPresent() && !search.get().isEmpty()) {
-            candidatePage = candidateService.findBySkill(search.get(), currentPage - 1, pageSize, "id", "asc");
-            model.addAttribute("search", search.get());
-        } else {
-            candidatePage = candidateService.findMatchingCandidates(jobID, currentPage - 1, pageSize, "id", "asc");
-        }
-        model.addAttribute("candidatePage", candidatePage);
-
-        int totalPages = candidatePage.getTotalPages();
-        if (totalPages > 0) {
-            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
-                    .boxed()
-                    .collect(Collectors.toList());
-            model.addAttribute("pageNumbers", pageNumbers);
-
-        }
+        List<Candidate> candidates = candidateService.findMatchingCandidates(jobID);
+        System.out.println(candidates.size());
+        model.addAttribute("candidates", candidates);
         return "jobs/CandidateMatching";
     }
 }

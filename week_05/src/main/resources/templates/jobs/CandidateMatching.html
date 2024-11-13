@@ -111,7 +111,7 @@
         <th>Skill</th>
         <th>Action</th>
     </tr>
-    <tr th:each="candidate, iStat : ${candidatePage.content}">
+    <tr th:each="candidate : ${candidates}">
         <td th:text="${candidate.id}"></td>
         <td th:text="${candidate.fullName}"></td>
         <td th:text="${candidate.dob}"></td>
@@ -124,30 +124,14 @@
                     th:text="${skill.skill.skillName +' :' + skill.skillLevel}"></li>
             </ul>
         <td>
-            <form th:action="@{/candidates/show_edit_form/{id}(id=${candidate.id})}" method="get"
+            <form th:action="@{/candidates/send_mail/{id}(id=${candidate.id})}" method="get"
                   style="display:inline;">
-                <button type="submit">Edit</button>
+                <button type="submit">Aplly
+                </button>
             </form>
-            <form th:action="@{'/delete/' + ${candidate.id}}" method="post" style="display:inline;">
-                <button type="submit">Delete</button>
-            </form>
-            <form th:action="@{/show_job_match/{id}(id=${candidate.id})}" method="get"
-                  style="display:inline;">
-                <button type="submit">Job Matching</button>
-            </form>
+
         </td>
     </tr>
 </table>
-<div class="inline" th:if="${candidatePage.totalPages > 0}" th:each="pageNumbers : ${pageNumbers}">
-    <a th:href="@{/templates/candidates(size=${candidatePage.size}, page=${pageNumbers}, search=${search})}"
-       th:if="${search != null and search != ''}"
-       th:text="${pageNumbers}"
-       th:class="${pageNumbers == candidatePage.number + 1} ? 'active' : ''"></a>
-    <a th:href="@{/templates/candidates(size=${candidatePage.size}, page=${pageNumbers})}"
-       th:if="${search == null or search == ''}"
-       th:text="${pageNumbers}"
-       th:class="${pageNumbers == candidatePage.number + 1} ? 'active' : ''"></a>
-</div>
-
 </body>
 </html>

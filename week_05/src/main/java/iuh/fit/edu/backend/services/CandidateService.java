@@ -1,11 +1,15 @@
 package iuh.fit.edu.backend.services;
 
 import iuh.fit.edu.backend.models.Candidate;
+import iuh.fit.edu.backend.models.Job;
+import iuh.fit.edu.backend.models.JobSkill;
 import iuh.fit.edu.backend.repositories.CandidateRepository;
+import iuh.fit.edu.backend.repositories.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -13,6 +17,10 @@ import java.util.List;
 public class CandidateService {
     @Autowired
     private CandidateRepository candidateRepository;
+    @Autowired
+    private JobRepository jobRepository;
+    @Autowired
+    private JobService jobService;
 
     public Page<Candidate> findAll(int page, int size, String sortBy, String sortDirection) {
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
@@ -45,10 +53,12 @@ public class CandidateService {
         return candidateRepository.findByKey(skillName, pageable);
     }
 
-    public Page<Candidate> findMatchingCandidates(Long jobId, int page, int size, String sortBy, String sortDirection) {
-        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
-        Pageable pageable = PageRequest.of(page, size, sort);
-        return candidateRepository.findMatchingCandidates(jobId, pageable);
+    public List<Candidate> findMatchingCandidates(Long jobId) {
+        Job job = jobService.findById(jobId);
+        return job.getJobSkills().stream()
+                .map(jobSkill -> candidateRepository.findMatchingCandidates(jobSkill.getSkillLevel(), jobSkill.getSkill().getSkillName()))
+                .flatMap(List::stream)
+                .toList();
     }
 
 }

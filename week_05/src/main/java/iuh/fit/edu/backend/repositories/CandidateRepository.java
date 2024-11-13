@@ -1,5 +1,6 @@
 package iuh.fit.edu.backend.repositories;
 
+import iuh.fit.edu.backend.enums.skillLevel;
 import iuh.fit.edu.backend.models.Candidate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,10 +23,9 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long> {
             "UPPER(c.email) LIKE CONCAT('%', UPPER(?1), '%') ")
     Page<Candidate> findByKey(String ket, Pageable pageable);
 
-    @Query("SELECT c FROM Candidate c JOIN c.candidateSkills cs JOIN JobSkill js ON cs.skill.id = js.skill.id " +
-            "WHERE js.job.id = :jobId AND cs.skillLevel >= js.skillLevel " +
-            "GROUP BY c.id " +
-            "HAVING COUNT(cs.id) > 0 " +
-            "ORDER BY COUNT(cs.id) DESC")
-    Page<Candidate> findMatchingCandidates(Long jobId, Pageable pageable);
+    @Query("""
+            select c from Candidate c inner join c.candidateSkills candidateSkills
+            where candidateSkills.skillLevel >= ?1 and candidateSkills.skill.skillName = ?2
+            """)
+    List<Candidate> findMatchingCandidates(skillLevel skillLevel, String skillName);
 }

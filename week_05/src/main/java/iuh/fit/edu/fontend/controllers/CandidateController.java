@@ -109,23 +109,13 @@ public class CandidateController {
     }
 
     @GetMapping("/candidates/show_job_match/{id}")
-    public String showJobMatch(@PathVariable("id") Long id, Model model, @RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
-
-        int currentPage = page.orElse(1);
-        int pageSize = size.orElse(10);
-        Page<Job> jobPage = jobService.findMatchingJobs(id, currentPage - 1, pageSize, "id", "asc");
+    public String showJobMatch(@PathVariable("id") Long id, Model model) {
+        ModelAndView modelAndView = new ModelAndView();
+        List<Job> jobs = jobService.findJobsForCandidate(id);
         Candidate candidate = candidateRepository.findById(id).get();
+        System.out.println(jobs.size());
         model.addAttribute("candidate", candidate);
-        model.addAttribute("jobPage", jobPage);
-        int totalPages = jobPage.getTotalPages();
-        if (totalPages > 0) {
-            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
-                    .boxed()
-                    .collect(Collectors.toList());
-            model.addAttribute("pageNumbers", pageNumbers);
-        }
-
-
+        model.addAttribute("jobs", jobs);
         return "jobs/jobMatching";
     }
 

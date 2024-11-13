@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Post</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<h1>List Post</h1>
+<table>
+    <tr>
+        <th>Id</th>
+        <th>Author</th>
+        <th>Parent</th>
+        <th>Title</th>
+        <th>Meta Title</th>
+        <th>Summary</th>
+        <th>Published</th>
+        <th>Updated At</th>
+        <th>Published At</th>
+        <th>Content</th>
+    </tr>
+    <tr th:each="post : ${posts}">
+        <td th:text="${post.id}"></td>
+        <td th:text="${post.getAuthor().firstName} + ' ' + ${post.getAuthor().middleName} + ' ' + ${post.getAuthor().lastName}"></td>
+        <td th:if="${post.parent != null}" th:text="${post.parent.id}"></td>
+        <td th:unless="${post.parent != null}">No Parent</td>
+        <td th:text="${post.title}"></td>
+        <td th:text="${post.metaTitle}"></td>
+        <td th:text="${post.summary}"></td>
+        <td th:if="${post.published} != false">Yes</td>
+        <td th:unless="${post.published} != false">Not yet</td>
+        <td th:if="${post.updatedAt != null}" th:text="${post.updatedAt}"></td>
+        <td th:unless="${post.updatedAt != null}">Not yet</td>
+        <td th:if="${post.publishedAt != null}" th:text="${post.publishedAt}"></td>
+        <td th:unless="${post.publishedAt != null}">Not yet</td>
+        <td th:text="${post.content}"></td>
+    </tr>
+</table>
+</body>
+</html>

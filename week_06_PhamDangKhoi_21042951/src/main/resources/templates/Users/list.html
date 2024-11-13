@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<h1>List Users</h1>
+<table>
+    <tr>
+        <th>Id</th>
+        <th>Full Name</th>
+        <th>Mobile</th>
+        <th>Email</th>
+        <th>Registered At</th>
+        <th>Last Login</th>
+        <th>Intro</th>
+        <th>Profile</th>
+        <th>Action</th>
+    </tr>
+    <tr th:each="user : ${users}">
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.firstName} + ' ' + ${user.middleName} + ' ' + ${user.lastName}"></td>
+        <td th:text="${user.mobile}"></td>
+        <td th:text="${user.email}"></td>
+        <td th:text="${user.registeredAt}"></td>
+        <td th:text="${user.lastLogin}"></td>
+        <td th:text="${user.intro}"></td>
+        <td th:text="${user.profile}"></td>
+        <td>
+            <a th:href="@{'/users/edit/' + ${user.id}}">Edit</a>
+            <a th:href="@{'/users/delete/' + ${user.id}}">Delete</a>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

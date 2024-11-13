@@ -3,7 +3,9 @@ package iuh.fit.edu.backend.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -30,6 +32,6 @@ public class Job {
     private Company company;
 
     @OneToMany(mappedBy = "job")
-    private Set<JobSkill> jobSkills = new LinkedHashSet<>();
+    private List<JobSkill> jobSkills = new ArrayList<>();
 
 }

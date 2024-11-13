@@ -57,37 +57,37 @@
             <td><label for="job_description">Job Description:</label></td>
             <td><input type="text" id="job_description" th:field="*{jobDesc}"></td>
         </tr>
+        <tr>
+            <td colspan="2">Skills Requiring:</td>
+        </tr>
+        <tr th:each="i : ${#numbers.sequence(0, 4)}">
+            <td>
+                <select th:field="*{jobSkills[__${i}__].skill.id}">
+                    <option value="">--Choose a skill--</option>
+
+                    <option th:each="availableSkill : ${skills}" th:value="${availableSkill.id}"
+                            th:text="${availableSkill.skillName}"></option>
+                </select>
+            </td>
+            <td>
+                <select th:field="*{jobSkills[__${i}__].skillLevel}">
+                    <option th:each="level : ${skillLevels}" th:value="${level}"
+                            th:text="${level}"></option>
+                </select>
+            </td>
+            <td>
+                <input type="text" th:field="*{jobSkills[__${i}__].moreInfos}" placeholder="More Infos"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="btn btn-primary" type="submit">Add</button>
+            </td>
+        </tr>
+        <div class="form-group">
+            <button type="submit">Save</button>
+        </div>
     </table>
-    <h3>Skills</h3>
-    <!--    <table class="skills-group" th:each="i : ${#numbers.sequence(0, 4)}">-->
-    <!--        <tr>-->
-    <!--            <td><label for="skill_name">Skill name:</label></td>-->
-    <!--            <td><input type="text" id="skill_name" th:field="*{jobSkills[__${i}__].skill.skillName}"></td>-->
-    <!--            <td><label for="skill_desc">Skill Description:</label></td>-->
-    <!--            <td><input type="text" id="skill_desc" th:field="*{jobSkills[__${i}__].skill.skillDescription}"></td>-->
-    <!--            <td><label for="skill_desc">Skill Type:</label></td>-->
-    <!--            <td>-->
-    <!--                <select id="skill_type" th:field="*{jobSkills[__${i}__].skill.type}">-->
-    <!--                    <option th:each="skillType : ${skillTypes}"-->
-    <!--                            th:value="${skillType}"-->
-    <!--                            th:text="${skillType}"></option>-->
-    <!--                </select>-->
-    <!--            </td>-->
-    <!--            <td><label for="skill_level">Skill Type:</label></td>-->
-    <!--            <td>-->
-    <!--                <select id="skill_level" th:field="*{jobSkills[__${i}__].skillLevel}">-->
-    <!--                    <option th:each="skillLevels : ${skillLevels}"-->
-    <!--                            th:value="${skillLevels}"-->
-    <!--                            th:text="${skillLevels}"></option>-->
-    <!--                </select>-->
-    <!--            </td>-->
-    <!--            <td><label for="moreInfs">Skill Type:</label></td>-->
-    <!--            <td><input type="text" id="moreInfs" th:field="*{jobSkills[__${i}__].moreInfos}"></td>-->
-    <!--        </tr>-->
-    <!--    </table>-->
-    <div class="form-group">
-        <button type="submit">Save</button>
-    </div>
 </form>
 </body>
 </html>

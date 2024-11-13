@@ -45,7 +45,7 @@
         <th>Skills</th>
         <th>Action</th>
     </tr>
-    <tr th:each="job, iStat : ${jobPage.content}">
+    <tr th:each="job : ${jobs}">
         <td th:text="${job.jobName}"></td>
         <td th:text="${job.jobDesc}"></td>
         <td>
