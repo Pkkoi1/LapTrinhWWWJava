@@ -12,9 +12,9 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Table(name = "user")
 public class User {
     @Id
@@ -23,15 +23,15 @@ public class User {
     private Long id;
 
     @Size(max = 50)
-    @Column(name = "first_Name", length = 50)
+    @Column(name = "firstName", length = 50)
     private String firstName;
 
     @Size(max = 50)
-    @Column(name = "middle_Name", length = 50)
+    @Column(name = "middleName", length = 50)
     private String middleName;
 
     @Size(max = 50)
-    @Column(name = "last_Name", length = 50)
+    @Column(name = "lastName", length = 50)
     private String lastName;
 
     @Size(max = 15)
@@ -44,14 +44,14 @@ public class User {
 
     @Size(max = 32)
     @NotNull
-    @Column(name = "password_Hash", nullable = false, length = 32)
+    @Column(name = "passwordHash", nullable = false, length = 32)
     private String passwordHash;
 
     @NotNull
-    @Column(name = "registered_At", nullable = false)
+    @Column(name = "registeredAt", nullable = false)
     private Instant registeredAt;
 
-    @Column(name = "last_Login")
+    @Column(name = "lastLogin")
     private Instant lastLogin;
 
     @Lob

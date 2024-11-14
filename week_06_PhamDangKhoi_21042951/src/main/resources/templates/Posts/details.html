@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${post.getMetaTitle()}"></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 60%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .title h1 {
+            font-size: 2em;
+            color: #333;
+        }
+        .title .author {
+            font-weight: bold;
+            color: #555;
+        }
+        .title .published_Time {
+            font-size: 0.9em;
+            color: #999;
+        }
+        .content {
+            font-size: 1.1em;
+            color: #333;
+            line-height: 1.6;
+        }
+        .content p {
+            margin-bottom: 20px;
+        }
+        #content {
+            text-align: justify;
+            font-size: 1.5vh;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="title">
+        <h1 th:text="${post.getTitle()}"></h1>
+        <p class="author" th:text="${post.getAuthor().firstName} + ' ' + ${post.getAuthor().middleName} + ' ' + ${post.getAuthor().lastName}">Author</p>
+        <p id="published_Time" class="published_Time" th:text="${'Published At: ' + #dates.format(post.publishedAt, 'HH:mm dd/MM/yyyy')}"></p>
+        <hr>
+    </div>
+    <div class="content">
+        <p id="content" th:text="${post.getContent()}"></p>
+    </div>
+</div>
+</body>
+</html>

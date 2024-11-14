@@ -15,6 +15,7 @@ import java.util.Set;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Table(name = "post")
 public class Post {
     @Id
@@ -24,11 +25,11 @@ public class Post {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "author_Id", nullable = false)
+    @JoinColumn(name = "authorId", nullable = false)
     private User author;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_Id")
+    @JoinColumn(name = "parentId")
     private Post parent;
 
     @Size(max = 75)
@@ -37,7 +38,7 @@ public class Post {
     private String title;
 
     @Size(max = 100)
-    @Column(name = "meta_Title", length = 100)
+    @Column(name = "metaTitle", length = 100)
     private String metaTitle;
 
     @Lob
@@ -50,13 +51,13 @@ public class Post {
     private Boolean published = false;
 
     @NotNull
-    @Column(name = "created_At", nullable = false)
+    @Column(name = "createdAt", nullable = false)
     private Instant createdAt;
 
-    @Column(name = "updated_At")
+    @Column(name = "updatedAt")
     private Instant updatedAt;
 
-    @Column(name = "published_At")
+    @Column(name = "publishedAt")
     private Instant publishedAt;
 
     @Lob
@@ -68,6 +69,5 @@ public class Post {
 
     @OneToMany(mappedBy = "post")
     private Set<PostComment> postComments = new LinkedHashSet<>();
-
 
 }

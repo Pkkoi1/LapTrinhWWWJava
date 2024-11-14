@@ -4,61 +4,150 @@
     <meta charset="UTF-8">
     <title>Post</title>
     <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
         }
-        th, td {
+        .container {
+            width: 60%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 20px;
+            position: relative;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .list-group {
+            margin-top: 20px;
+        }
+        .list-group div {
+            background-color: #fff;
             border: 1px solid #ddd;
-            padding: 8px;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        th {
-            background-color: #f2f2f2;
-            text-align: left;
+        .list-group h5 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #333;
         }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
+        .list-group p {
+            color: #666;
+            margin: 10px 0;
         }
-        tr:hover {
-            background-color: #ddd;
+        .list-group p.author {
+            font-weight: bold;
+            color: #333;
         }
-        th, td {
-            padding: 12px;
-            text-align: left;
+        .list-group p.published-at {
+            font-size: 0.9em;
+            color: #999;
+        }
+        .list-group p.comment {
+            font-size: 0.8em;
+            color: #666;
+        }
+        .logout-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #ff4b5c;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .logout-button:hover {
+            background-color: #ff1f3a;
+        }
+        .account {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: #007bff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .account:hover {
+            background-color: #0056b3;
+        }
+        .view-details {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .view-details:hover {
+            background-color: #0056b3;
+        }
+        .comment-form {
+            margin-top: 20px;
+        }
+        .comment-form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: vertical;
+        }
+        .comment-form button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .comment-form button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-<h1>List Post</h1>
-<table>
-    <tr>
-        <th>Id</th>
-        <th>Author</th>
-        <th>Parent</th>
-        <th>Title</th>
-        <th>Meta Title</th>
-        <th>Summary</th>
-        <th>Published</th>
-        <th>Updated At</th>
-        <th>Published At</th>
-        <th>Content</th>
-    </tr>
-    <tr th:each="post : ${posts}">
-        <td th:text="${post.id}"></td>
-        <td th:text="${post.getAuthor().firstName} + ' ' + ${post.getAuthor().middleName} + ' ' + ${post.getAuthor().lastName}"></td>
-        <td th:if="${post.parent != null}" th:text="${post.parent.id}"></td>
-        <td th:unless="${post.parent != null}">No Parent</td>
-        <td th:text="${post.title}"></td>
-        <td th:text="${post.metaTitle}"></td>
-        <td th:text="${post.summary}"></td>
-        <td th:if="${post.published} != false">Yes</td>
-        <td th:unless="${post.published} != false">Not yet</td>
-        <td th:if="${post.updatedAt != null}" th:text="${post.updatedAt}"></td>
-        <td th:unless="${post.updatedAt != null}">Not yet</td>
-        <td th:if="${post.publishedAt != null}" th:text="${post.publishedAt}"></td>
-        <td th:unless="${post.publishedAt != null}">Not yet</td>
-        <td th:text="${post.content}"></td>
-    </tr>
-</table>
+<div class="account">
+    A
+</div>
+<div class="container">
+    <button class="logout-button" onclick="window.location.href='/'">Logout</button>
+    <h1>Intellij Blogs</h1>
+    <div class="list-group">
+        <div th:each="post : ${posts}">
+            <h5 th:text="${post.title}">Post Title</h5>
+            <p th:text="${post.summary}">Post Summary</p>
+            <p class="author" th:text="${post.getAuthor().firstName} + ' ' + ${post.getAuthor().middleName} + ' ' + ${post.getAuthor().lastName}">Author</p>
+            <p class="published-at" th:text="${#dates.format(post.publishedAt, 'HH:mm dd/MM/yyyy')}">Published At</p>
+            <p class="comment" th:text="${'Comments: ' + post.getPostComments().size()}">Comment</p>
+            <a th:href="@{/post/details/{id}(id = ${post.id})}" class="view-details">View Details</a>
+            <div class="comment-form">
+                <form th:action="@{'/posts/' + ${post.id} + '/comments'}" method="post">
+                    <textarea name="comment" rows="3" placeholder="Add a comment..."></textarea>
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

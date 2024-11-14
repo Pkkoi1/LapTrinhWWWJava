@@ -13,9 +13,9 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Table(name = "post_comment")
 public class PostComment {
     @Id
@@ -25,11 +25,11 @@ public class PostComment {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "post_Id", nullable = false)
+    @JoinColumn(name = "postId", nullable = false)
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_Id")
+    @JoinColumn(name = "parentId")
     private PostComment parent;
 
     @Size(max = 100)
@@ -43,10 +43,10 @@ public class PostComment {
     private Boolean published = false;
 
     @NotNull
-    @Column(name = "created_At", nullable = false)
+    @Column(name = "createdAt", nullable = false)
     private Instant createdAt;
 
-    @Column(name = "published_At")
+    @Column(name = "publishedAt")
     private Instant publishedAt;
 
     @Lob

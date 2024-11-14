@@ -4,17 +4,29 @@
     <meta charset="UTF-8">
     <title>User</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
         th, td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 12px;
+            text-align: left;
         }
         th {
             background-color: #f2f2f2;
-            text-align: left;
         }
         tr:nth-child(even) {
             background-color: #f9f9f9;
@@ -22,9 +34,13 @@
         tr:hover {
             background-color: #ddd;
         }
-        th, td {
-            padding: 12px;
-            text-align: left;
+        .action-links a {
+            margin-right: 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .action-links a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -38,8 +54,6 @@
         <th>Email</th>
         <th>Registered At</th>
         <th>Last Login</th>
-        <th>Intro</th>
-        <th>Profile</th>
         <th>Action</th>
     </tr>
     <tr th:each="user : ${users}">
@@ -49,9 +63,7 @@
         <td th:text="${user.email}"></td>
         <td th:text="${user.registeredAt}"></td>
         <td th:text="${user.lastLogin}"></td>
-        <td th:text="${user.intro}"></td>
-        <td th:text="${user.profile}"></td>
-        <td>
+        <td class="action-links">
             <a th:href="@{'/users/edit/' + ${user.id}}">Edit</a>
             <a th:href="@{'/users/delete/' + ${user.id}}">Delete</a>
         </td>
