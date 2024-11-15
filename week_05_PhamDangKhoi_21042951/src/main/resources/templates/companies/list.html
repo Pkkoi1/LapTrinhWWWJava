@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Company</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #343a40;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 2.5em;
+        }
+
+        table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e9ecef;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        input[type="text"], input[type="date"], select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .inline {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .inline a {
+            margin: 0 5px;
+            padding: 8px 16px;
+            text-decoration: none;
+            color: black;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .inline a.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .inline a:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        div.inline {
+            color: black;
+            float: none;
+            padding: 5px 5px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>List company</h1>
+    <button class="btn" type="button" onclick="location.href='http://localhost:8080'">Back</button>
+    <button id="addBtn" onclick="location.href='/companies/show_add_form'">
+        Add Company
+    </button>
+
+    <form action="/companies/" method="get" style="margin-top: 1%">
+        <input type="text" name="search" placeholder="Search: Jobs, name, phone, email...">
+        <button type="submit">Find</button>
+    </form>
+
+    <table>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Address</th>
+            <th>Phone</th>
+            <th>About</th>
+            <th>Job</th>
+            <th>Action</th>
+        </tr>
+        <tr th:each="company, iStat : ${companyPage.content}">
+            <td th:text="${company.id}"></td>
+            <td>
+                <a th:href="${company.webUrl}" th:text="${company.compName}" th:title="${company.webUrl}"></a>
+            </td>
+            <td th:text="${company.email}"></td>
+            <td th:text="${company.address.street + ', ' + company.address.city+ ', ' + company.address.country.getName()}"></td>
+            <td th:text="${company.phone}"></td>
+            <td th:text="${company.about}"></td>
+            <td>
+                <ul>
+                    <li th:each="job : ${company.getJobs()}"
+                        th:text="${job.jobName}"></li>
+                </ul>
+            </td>
+            <td>
+                <form th:action="@{/jobs/{id}(id=${company.id})}" method="get" style="display:inline;">
+                    <button type="submit">Detail</button>
+                </form>
+                <form th:action="@{/companies/show_edit_form/{id}(id=${company.id})}" method="get"
+                      style="display:inline;">
+                    <button type="submit">Edit</button>
+                </form>
+                <form th:action="@{'/delete/' + ${company.id}}" method="post" style="display:inline;">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+    <div class="inline" th:if="${companyPage.totalPages > 0}" th:each="pageNumbers : ${pageNumbers}">
+        <a th:href="@{/companies(size=${companyPage.size}, page = ${pageNumbers})}"
+           th:if="${search == null or search == ''}"
+           th:text="${pageNumbers}"
+           th:class="${pageNumbers == companyPage.number + 1} ? 'active':''"></a>
+        <a th:href="@{/companies(size=${companyPage.size}, page = ${pageNumbers}, search=${search})}"
+           th:if="${search != null and search != ''}"
+           th:text="${pageNumbers}"
+           th:class="${pageNumbers == companyPage.number + 1} ? 'active':''"></a>
+    </div>
+</div>
+</body>
+</html>

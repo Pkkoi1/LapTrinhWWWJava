@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Job</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #343a40;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 2.5em;
+        }
+
+        table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e9ecef;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Job Matching</h1>
+    <div>
+        <p>Candidate Name: <span th:text="${candidate.fullName}"></span></p>
+    </div>
+    <button type="button" onclick="location.href='/candidates'">Back</button>
+    <table>
+        <tr>
+            <th>Job Title</th>
+            <th>Job Description</th>
+            <th>Skills</th>
+            <th>Action</th>
+        </tr>
+        <tr th:each="job : ${jobs}">
+            <td th:text="${job.jobName}"></td>
+            <td th:text="${job.jobDesc}"></td>
+            <td>
+                <ul>
+                    <li th:each="skill : ${job.getJobSkills()}"
+                        th:text="${skill.skill.skillName} + ' ,' + ${skill.skill.type} + ': ' + ${skill.skillLevel}"></li>
+                </ul>
+            </td>
+            <td>
+                <form th:action="@{/jobs/match/{jobId}/{candidateId}(jobId=${job.id}, candidateId=${candidate.id})}"
+                      method="post" style="display:inline;">
+                    <button type="submit">Match</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
