@@ -37,5 +37,8 @@ public class userService {
         return org.apache.commons.codec.digest.DigestUtils.md5Hex(password);
     }
 
+    public User findById(Long id) {
+        return userRepository.findById(id).orElse(null);
+    }
 
 }

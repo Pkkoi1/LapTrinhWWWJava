@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 60%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .userDetail {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .avt {
+            width: 100px;
+            height: 100px;
+            background-color: #007bff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 2em;
+            margin-right: 20px;
+        }
+        .userDetail h3 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #333;
+        }
+        .userDetail p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .edit {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .edit:hover {
+            background-color: #0056b3;
+        }
+        .userPosts {
+            margin-top: 20px;
+        }
+        .userPosts h3 {
+            color: #333;
+        }
+        .userPosts ul {
+            list-style: none;
+            padding: 0;
+        }
+        .userPosts li {
+            margin-bottom: 10px;
+        }
+        .userPosts a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .userPosts a:hover {
+            text-decoration: underline;
+        }
+        .posts {
+            margin-top: 20px;
+        }
+
+        .posts div {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .posts h4 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        .posts p {
+            color: #666;
+            margin: 10px 0;
+        }
+        .create-post {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .create-post:hover {
+            background-color: #218838;
+        }
+        .view, .edit-post {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .view:hover, .edit-post:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="userDetail">
+        <div class="avt" th:text="${user.lastName.charAt(0)}"></div>
+        <div>
+            <h3 th:text="${user.firstName} + ' ' + ${user.middleName} + ' ' + ${user.lastName}"></h3>
+            <p th:text="${user.email}"></p>
+            <p th:text="${user.mobile}"></p>
+            <a href="/users/edit" class="edit">Edit</a>
+        </div>
+    </div>
+
+    <div class="userPosts">
+        <h3>Posts</h3>
+        <div class="posts">
+            <div th:each="post : ${posts}">
+                <h4 th:text="${post.title}"></h4>
+                <p th:text="${post.summary}"></p>
+                <p th:text="'Published Date: ' + ${#dates.format(post.publishedAt, 'HH:mm dd/MM/yyyy')}"></p>
+                <p th:text="'Comments: ' + ${post.getPostComments().size()}"></p>
+                <div>
+                    <form th:action="@{/post/view/{id}(id=${post.id})}" method="get" style="display: inline-block;">
+                        <button type="submit" class="view">View</button>
+                    </form>
+                    <form th:action="@{/post/edit/{id}(id=${post.id})}" method="get" style="display: inline-block;">
+                        <button type="submit" class="edit-post">Edit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <form th:action="@{/post/createPost/user = {id}(id=${user.id})}" method="get">
+            <button type="submit" class="create-post">Create Post</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

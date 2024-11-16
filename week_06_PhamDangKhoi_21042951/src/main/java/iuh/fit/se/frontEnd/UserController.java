@@ -1,12 +1,14 @@
 package iuh.fit.se.frontEnd;
 
 import iuh.fit.se.backEnd.Models.User;
+import iuh.fit.se.backEnd.Services.postService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import iuh.fit.se.backEnd.Services.userService;
 import iuh.fit.se.backEnd.Repositories.UserRepository;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -24,6 +26,9 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private postService postService;
     @GetMapping(value = {"/", ""})
     public ModelAndView showListUser() {
         ModelAndView modelAndView = new ModelAndView("Users/list");
@@ -35,12 +40,13 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam String email, @RequestParam String password) {
-        String pass =  userService.maHoa(password);
+    public String login(@RequestParam String email, @RequestParam String password, RedirectAttributes redirectAttributes) {
+        String pass = userService.maHoa(password);
         User user = userService.findUserByEmailAndPassword(email, pass);
-        System.out.println(pass);
+
         if (user != null) {
             userService.updateLoginTime(email);
+            redirectAttributes.addFlashAttribute("user", user);
             return "redirect:/post";
         }
         return "redirect:/user";
@@ -60,5 +66,13 @@ public class UserController {
         user.setRegisteredAt(vietnamTime.toInstant());
         userRepository.save(user);
         return "redirect:/login";
+    }
+
+    @GetMapping("/account/user={id}")
+    public ModelAndView account(@PathVariable("id") long id) {
+        ModelAndView modelAndView = new ModelAndView("Users/userAccount");
+        modelAndView.addObject("user", userService.findById(id));
+        modelAndView.addObject("posts", postService.findPostByAuthor(id));
+        return modelAndView;
     }
 }
