@@ -105,7 +105,7 @@
             display: inline-block;
             margin-top: 20px;
             padding: 10px 20px;
-            background-color: #28a745;
+            background-color: #007bff;
             color: #fff;
             text-decoration: none;
             border-radius: 5px;
@@ -113,7 +113,7 @@
             cursor: pointer;
         }
         .create-post:hover {
-            background-color: #218838;
+            background-color: #0056b3;
         }
         .view, .edit-post {
             display: inline-block;
@@ -140,12 +140,23 @@
             <h3 th:text="${user.firstName} + ' ' + ${user.middleName} + ' ' + ${user.lastName}"></h3>
             <p th:text="${user.email}"></p>
             <p th:text="${user.mobile}"></p>
-            <a href="/users/edit" class="edit">Edit</a>
+            <form th:action="@{/user/edit/{id}(id = ${user.id})}" method="get" style="display: inline;">
+                <button type="submit" class="edit">Edit</button>
+            </form>
         </div>
+    </div>
+
+    <div class="about">
+        <h3>About</h3>
+        <p th:text="${user.intro}"></p>
+        <p th:text="${user.profile}"></p>
     </div>
 
     <div class="userPosts">
         <h3>Posts</h3>
+        <form th:action="@{/post/createPost/user = {id}(id=${user.id})}" method="get">
+            <button type="submit" class="create-post">Create Post</button>
+        </form>
         <div class="posts">
             <div th:each="post : ${posts}">
                 <h4 th:text="${post.title}"></h4>
@@ -162,9 +173,7 @@
                 </div>
             </div>
         </div>
-        <form th:action="@{/post/createPost/user = {id}(id=${user.id})}" method="get">
-            <button type="submit" class="create-post">Create Post</button>
-        </form>
+
     </div>
 </div>
 </body>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px 0; /* Added padding to the top and bottom */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Changed to flex-start to align items at the top */
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .avt {
+            width: 100px;
+            height: 100px;
+            background-color: #007bff;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            font-size: 2em;
+            margin: 20px auto; /* Added margin to avoid overlapping */
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Edit User</h1>
+    <div class="avt" th:text="${user.lastName.charAt(0)}"></div>
+    <form action="#" th:action="@{/user/edit/{id}(id = ${user.id})}" method="post" th:object="${user}">
+        <input type="hidden" th:field="*{id}" name="id">
+        <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" name="firstName" th:field="*{firstName}">
+        </div>
+        <div class="form-group">
+            <label for="middleName">Middle Name</label>
+            <input type="text" id="middleName" name="middleName" th:field="*{middleName}">
+        </div>
+        <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" name="lastName" th:field="*{lastName}">
+        </div>
+        <div class="form-group">
+            <label for="mobile">Mobile</label>
+            <input type="text" id="mobile" name="mobile" th:field="*{mobile}">
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="text" id="email" name="email" th:field="*{email}">
+        </div>
+        <div class="form-group">
+            <label for="currentPassword">Current Password</label>
+            <input type="password" id="currentPassword" name="currentPassword">
+        </div>
+        <div class="form-group">
+            <label for="newPassword">New Password</label>
+            <input type="password" id="newPassword" name="newPassword">
+        </div>
+        <div class="form-group">
+            <label for="intro">Intro</label>
+            <textarea id="intro" name="intro" th:field="*{intro}"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="profile">Profile</label>
+            <textarea id="profile" name="profile" th:field="*{profile}"></textarea>
+        </div>
+        <button type="submit">Update User</button>
+    </form>
+</div>
+</body>
+</html>

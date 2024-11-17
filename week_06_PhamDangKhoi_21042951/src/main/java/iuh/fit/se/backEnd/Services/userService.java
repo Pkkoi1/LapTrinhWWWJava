@@ -41,4 +41,12 @@ public class userService {
         return userRepository.findById(id).orElse(null);
     }
 
+    public String findPasswordById(Long id) {
+        return userRepository.findPasswordById(id);
+    }
+
+    public Instant findRegisteredAtById(Long id) {
+        return userRepository.findRegisteredAtById(id);
+    }
+
 }
