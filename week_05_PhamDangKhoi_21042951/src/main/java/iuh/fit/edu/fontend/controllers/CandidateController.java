@@ -18,10 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -80,6 +77,13 @@ public class CandidateController {
     public ModelAndView edit(@PathVariable("id") long id) {
         ModelAndView modelAndView = new ModelAndView();
         Optional<Candidate> opt = candidateRepository.findById(id);
+        List<String> Skills = candidateService.suggestSkills(id);
+        List<String> suggestSkills = new ArrayList<>();
+        for (String skill : Skills) {
+            if (!skill.equalsIgnoreCase(opt.get().getCandidateSkills().get(0).getSkill().getSkillName())) {
+                suggestSkills.add(skill);
+            }
+        }
         if (opt.isPresent()) {
             Candidate candidate = opt.get();
             modelAndView.addObject("candidate", candidate);
@@ -88,6 +92,7 @@ public class CandidateController {
                     .sorted(Comparator.comparing(CountryCode::getName))
                     .collect(Collectors.toList());
             modelAndView.addObject("country", sortedCountries);
+            modelAndView.addObject("skills", suggestSkills);
             modelAndView.setViewName("candidates/edit");
         }
         return modelAndView;

@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+
 public interface CompanyRespository extends JpaRepository<Company, Long> {
     @Query("SELECT c FROM Company c WHERE " +
             "UPPER(c.compName) LIKE CONCAT('%', UPPER(?1), '%') OR " +
@@ -18,4 +20,8 @@ public interface CompanyRespository extends JpaRepository<Company, Long> {
     @Query("SELECT c FROM Company c inner join c.jobs j " +
             "where UPPER(c.jobs) LIKE CONCAT('%', UPPER(?1), '%')")
     Page<Company> findByJob(String key, Pageable pageable);
+
+    @Query("select c from Company c inner join c.jobs j inner join j.jobSkills jobSkills " +
+            "where jobSkills.skill.skillName = ?1")
+    List<Company> findBySkill(String skillName);
 }

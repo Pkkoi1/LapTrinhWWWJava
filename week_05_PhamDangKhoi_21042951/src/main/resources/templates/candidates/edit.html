@@ -189,10 +189,10 @@
         <tr>
             <th>No.</th>
             <th>Skill</th>
-            <th>Job Required</th>
         </tr>
-        <tr>
-
+        <tr th:each="suggest, iterStat : ${skills}">
+            <td th:text="${iterStat.count}"></td>
+            <td th:text="${suggest}"></td>
         </tr>
     </table>
 </div>

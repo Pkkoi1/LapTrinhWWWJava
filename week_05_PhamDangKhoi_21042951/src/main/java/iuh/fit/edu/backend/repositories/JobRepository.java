@@ -1,5 +1,6 @@
 package iuh.fit.edu.backend.repositories;
 
+import iuh.fit.edu.backend.models.Company;
 import iuh.fit.edu.backend.models.Job;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,5 +19,9 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     @Query(" select j from Job j inner join j.jobSkills jobSkills " +
             "where jobSkills.skillLevel <= ?1 and jobSkills.skill.skillName = ?2")
     List<Job> findJobsBySkillLevelAndSkillName(skillLevel skillLevel, String skillName);
+
+    @Query("select j from Job j inner join j.jobSkills jobSkills " +
+            "where jobSkills.skill.skillName = ?1")
+    List<Job> findBySkill(String skillName);
 
 }
