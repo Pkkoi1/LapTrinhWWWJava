@@ -44,10 +44,11 @@ public class PostController {
         return modelAndView;
     }
     @GetMapping("/details/{id}")
-    public ModelAndView showPostDetails(@PathVariable("id") long id) {
+    public ModelAndView showPostDetails(@PathVariable("id") long id, long userId) {
         ModelAndView modelAndView = new ModelAndView("Posts/details");
         Post post = postService.findById(id);
         modelAndView.addObject("post", post);
+        modelAndView.addObject("user", userService.findById(userId));
         return modelAndView;
     }
 
