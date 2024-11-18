@@ -163,27 +163,25 @@
                     </select>
                 </td>
             </tr>
+        </table>
+
+        <h1>Skills</h1>
+        <table id="skills">
             <tr>
-                <td colspan="2" style="text-align: center;">
-                    <input type="submit" value="Update Candidates">
-                </td>
+                <th>Skill</th>
+                <th>Level</th>
+                <th>Description</th>
+            </tr>
+            <tr th:each="skill, iStat : ${candidate.getCandidateSkills()}">
+                <td th:text="${skill.skill.skillName}"></td>
+                <td th:text="${skill.skillLevel}"><input></td>
+                <td th:text="${skill.moreInfos}"></td>
             </tr>
         </table>
-    </form>
-    <h1>Skills</h1>
-    <table id="skills">
-        <tr>
-            <th>Skill</th>
-            <th>Level</th>
-            <th>Description</th>
-        </tr>
-        <tr th:each="skill, iStat : ${candidate.getCandidateSkills()}">
-            <td th:text="${skill.skill.skillName}"></td>
-            <td th:text="${skill.skillLevel}"></td>
-            <td th:text="${skill.skill.skillDescription}"></td>
-        </tr>
-    </table>
 
+        <input type="submit" value="Update">
+
+    </form>
     <h1>SKills that you should learn</h1>
     <table id="suggests">
         <tr>

@@ -140,8 +140,8 @@
                       style="display:inline;">
                     <button type="submit">Edit</button>
                 </form>
-                <form th:action="@{'/delete/' + ${candidate.id}}" method="post" style="display:inline;">
-                    <button type="submit">Delete</button>
+                <form th:action="@{/candidates/detail/{id}(id=${candidate.id})}" method="get" style="display:inline;">
+                    <button type="submit">Detail</button>
                 </form>
                 <form th:action="@{/candidates/show_job_match/{id}(id=${candidate.id})}" method="get"
                       style="display:inline;">

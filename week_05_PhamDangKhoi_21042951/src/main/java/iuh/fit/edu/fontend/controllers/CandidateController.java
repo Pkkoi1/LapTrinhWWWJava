@@ -18,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -93,6 +94,8 @@ public class CandidateController {
                     .collect(Collectors.toList());
             modelAndView.addObject("country", sortedCountries);
             modelAndView.addObject("skills", suggestSkills);
+            modelAndView.addObject("skillLevels", skillLevel.values());
+
             modelAndView.setViewName("candidates/edit");
         }
         return modelAndView;
@@ -148,4 +151,25 @@ public class CandidateController {
         return "jobs/jobMatching";
     }
 
+    @GetMapping("/detail/{id}")
+    public String showCandidateDetail(@PathVariable("id") Long id, Model model) {
+        Optional<Candidate> candidate = candidateRepository.findById(id);
+
+        if (candidate.isPresent()) {
+            List<String> Skills = candidateService.suggestSkills(id);
+            List<String> suggestSkills = new ArrayList<>();
+            for (String skill : Skills) {
+                if (!skill.equalsIgnoreCase(candidate.get().getCandidateSkills().get(0).getSkill().getSkillName())) {
+                    suggestSkills.add(skill);
+                }
+            }
+            Date dob = Date.from(candidate.get().getDob().atStartOfDay(ZoneId.systemDefault()).toInstant());
+            model.addAttribute("dob", dob);
+            model.addAttribute("candidate", candidate.get());
+            model.addAttribute("skills", suggestSkills);
+
+            return "candidates/details";
+        }
+        return "redirect:/candidates";
+    }
 }
