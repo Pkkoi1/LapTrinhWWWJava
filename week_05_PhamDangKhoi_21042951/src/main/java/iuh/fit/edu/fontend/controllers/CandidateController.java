@@ -78,13 +78,8 @@ public class CandidateController {
     public ModelAndView edit(@PathVariable("id") long id) {
         ModelAndView modelAndView = new ModelAndView();
         Optional<Candidate> opt = candidateRepository.findById(id);
-        List<String> Skills = candidateService.suggestSkills(id);
-        List<String> suggestSkills = new ArrayList<>();
-        for (String skill : Skills) {
-            if (!skill.equalsIgnoreCase(opt.get().getCandidateSkills().get(0).getSkill().getSkillName())) {
-                suggestSkills.add(skill);
-            }
-        }
+       
+
         if (opt.isPresent()) {
             Candidate candidate = opt.get();
             modelAndView.addObject("candidate", candidate);
@@ -93,7 +88,7 @@ public class CandidateController {
                     .sorted(Comparator.comparing(CountryCode::getName))
                     .collect(Collectors.toList());
             modelAndView.addObject("country", sortedCountries);
-            modelAndView.addObject("skills", suggestSkills);
+
             modelAndView.addObject("skillLevels", skillLevel.values());
 
             modelAndView.setViewName("candidates/edit");

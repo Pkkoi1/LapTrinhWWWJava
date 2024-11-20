@@ -17,8 +17,8 @@ public interface CompanyRespository extends JpaRepository<Company, Long> {
             "UPPER(c.email) LIKE CONCAT('%', UPPER(?1), '%') ")
     Page<Company> findByKey(String key, Pageable pageable);
 
-    @Query("SELECT c FROM Company c inner join c.jobs j " +
-            "where UPPER(c.jobs) LIKE CONCAT('%', UPPER(?1), '%')")
+    @Query("SELECT c FROM Company c inner join c.jobs j on c.id=j.company.id " +
+            "where UPPER(j.jobName) LIKE  UPPER(?1)")
     Page<Company> findByJob(String key, Pageable pageable);
 
     @Query("select c from Company c inner join c.jobs j inner join j.jobSkills jobSkills " +

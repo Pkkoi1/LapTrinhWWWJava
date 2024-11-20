@@ -78,12 +78,14 @@
     <button type="button" onclick="location.href='/candidates'">Back</button>
     <table>
         <tr>
+            <th>No.</th>
             <th>Job Title</th>
             <th>Job Description</th>
             <th>Skills</th>
-            <th>Action</th>
+            <th>Company Required</th>
         </tr>
-        <tr th:each="job : ${jobs}">
+        <tr th:each="job, iterStat: ${jobs}">
+            <td th:text="${iterStat.index + 1}"></td>
             <td th:text="${job.jobName}"></td>
             <td th:text="${job.jobDesc}"></td>
             <td>
@@ -92,12 +94,10 @@
                         th:text="${skill.skill.skillName} + ' ,' + ${skill.skill.type} + ': ' + ${skill.skillLevel}"></li>
                 </ul>
             </td>
-            <td>
-                <form th:action="@{/jobs/match/{jobId}/{candidateId}(jobId=${job.id}, candidateId=${candidate.id})}"
-                      method="post" style="display:inline;">
-                    <button type="submit">Match</button>
-                </form>
+            <td><a th:text="${job.company.compName}"
+                   th:href="@{/jobs/{id}(id=${job.company.id})}"></a>
             </td>
+
         </tr>
     </table>
 </div>

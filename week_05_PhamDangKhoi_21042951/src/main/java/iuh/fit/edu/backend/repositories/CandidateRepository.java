@@ -7,13 +7,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.Instant;
 import java.util.List;
 
 
 public interface CandidateRepository extends JpaRepository<Candidate, Long> {
 
     @Query("SELECT c FROM Candidate c inner join c.candidateSkills sk WHERE " +
-            "UPPER(sk.skill.skillName) LIKE CONCAT('%', UPPER(?1), '%')" +
+            "UPPER(sk.skill.skillName) LIKE UPPER(?1) " +
             "ORDER BY sk.skillLevel")
     Page<Candidate> findBySkill(String skillName, Pageable pageable);
 

@@ -50,11 +50,20 @@ public class CandidateService {
     }
 
     public Page<Candidate> findBySkill(String skill, int page, int size, String sortBy, String sortDirection) {
-        String skillName = skill.toLowerCase();
+        String key = skill.toLowerCase();
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Candidate> candidatePage = new PageImpl<>(new ArrayList<>());
+        if (key.isEmpty()) {
+            return candidatePage;
+        } else {
+            candidatePage = candidateRepository.findBySkill(key, pageable);
+            if (candidatePage.isEmpty()) {
+                candidatePage = candidateRepository.findByKey(key, pageable);
+            }
+        }
 
-        return candidateRepository.findByKey(skillName, pageable);
+        return candidatePage;
     }
 
     public List<Candidate> findMatchingCandidates(Long jobId) {
@@ -71,21 +80,6 @@ public class CandidateService {
                 .map(jobSkill -> candidateRepository.findMatchingCandidatesByKey(jobSkill.getSkillLevel(), jobSkill.getSkill().getSkillName(), key))
                 .flatMap(List::stream)
                 .toList();
-    }
-
-    public List<Job> findJobsForCandidate(Long candidateId) {
-        Optional<Candidate> candidate = candidateRepository.findById(candidateId);
-        return candidate.get()
-                .getCandidateSkills().stream()
-                .map(
-                        candidateSkill ->
-                                jobRepository.findJobsBySkillLevelAndSkillName(
-                                        candidateSkill.getSkillLevel(), candidateSkill.getSkill().getSkillName()
-                                )
-                )
-                .flatMap(List::stream)
-                .toList();
-
     }
 
     public List<String> suggestSkills(Long candidateID) {

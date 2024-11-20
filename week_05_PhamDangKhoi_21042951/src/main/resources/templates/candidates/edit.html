@@ -182,17 +182,7 @@
         <input type="submit" value="Update">
 
     </form>
-    <h1>SKills that you should learn</h1>
-    <table id="suggests">
-        <tr>
-            <th>No.</th>
-            <th>Skill</th>
-        </tr>
-        <tr th:each="suggest, iterStat : ${skills}">
-            <td th:text="${iterStat.count}"></td>
-            <td th:text="${suggest}"></td>
-        </tr>
-    </table>
+
 </div>
 </body>
 </html>

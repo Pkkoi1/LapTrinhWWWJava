@@ -114,17 +114,19 @@
     </form>
     <table>
         <tr>
-            <th>Id</th>
+            <th>No.</th>
             <th>Name</th>
             <th>Date of Birth</th>
             <th>Address</th>
             <th>Phone</th>
             <th>Email</th>
             <th>Skill</th>
-            <th>Action</th>
+            <th>Edit</th>
+            <th>Detail</th>
+            <th>Jobs Matching</th>
         </tr>
         <tr th:each="candidate, iStat : ${candidatePage.content}">
-            <td th:text="${candidate.id}"></td>
+            <td th:text="${candidatePage.number * candidatePage.size + iStat.index + 1}"></td>
             <td th:text="${candidate.fullName}"></td>
             <td th:text="${candidate.dob}"></td>
             <td th:text="${candidate.address.street + ', ' + candidate.address.city+ ', ' + candidate.address.country.getName()}"></td>
@@ -135,14 +137,19 @@
                     <li th:each="skill : ${candidate.getCandidateSkills()}"
                         th:text="${skill.skill.skillName +' :' + skill.skillLevel}"></li>
                 </ul>
+            </td>
             <td>
                 <form th:action="@{/candidates/show_edit_form/{id}(id=${candidate.id})}" method="get"
                       style="display:inline;">
                     <button type="submit">Edit</button>
                 </form>
+            </td>
+            <td>
                 <form th:action="@{/candidates/detail/{id}(id=${candidate.id})}" method="get" style="display:inline;">
                     <button type="submit">Detail</button>
                 </form>
+            </td>
+            <td>
                 <form th:action="@{/candidates/show_job_match/{id}(id=${candidate.id})}" method="get"
                       style="display:inline;">
                     <button type="submit">Job Matching</button>

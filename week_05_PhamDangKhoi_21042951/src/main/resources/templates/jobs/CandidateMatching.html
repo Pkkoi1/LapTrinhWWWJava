@@ -119,7 +119,7 @@
 
     <table>
         <tr>
-            <th>Id</th>
+            <th>No.</th>
             <th>Name</th>
             <th>Date of Birth</th>
             <th>Address</th>
@@ -128,8 +128,8 @@
             <th>Skill</th>
             <th>Action</th>
         </tr>
-        <tr th:each="candidate : ${candidates}">
-            <td th:text="${candidate.id}"></td>
+        <tr th:each="candidate, isStat : ${candidates}">
+            <td th:text="${isStat.index + 1}"></td>
             <td th:text="${candidate.fullName}"></td>
             <td th:text="${candidate.dob}"></td>
             <td th:text="${candidate.address.street + ', ' + candidate.address.city+ ', ' + candidate.address.country.getName()}"></td>

@@ -40,6 +40,11 @@
             text-align: left;
         }
 
+        a {
+            text-decoration: none;
+            color: black;
+        }
+
         th {
             background-color: #007bff;
             color: white;
@@ -145,17 +150,18 @@
 
     <table>
         <tr>
-            <th>Id</th>
+            <th>No.</th>
             <th>Name</th>
             <th>Email</th>
             <th>Address</th>
             <th>Phone</th>
             <th>About</th>
             <th>Job</th>
-            <th>Action</th>
+            <th>Detail</th>
+            <th>Edit</th>
         </tr>
         <tr th:each="company, iStat : ${companyPage.content}">
-            <td th:text="${company.id}"></td>
+            <td th:text="${companyPage.number * companyPage.size + iStat.index + 1}"></td>
             <td>
                 <a th:href="${company.webUrl}" th:text="${company.compName}" th:title="${company.webUrl}"></a>
             </td>
@@ -173,12 +179,11 @@
                 <form th:action="@{/jobs/{id}(id=${company.id})}" method="get" style="display:inline;">
                     <button type="submit">Detail</button>
                 </form>
+            </td>
+            <td>
                 <form th:action="@{/companies/show_edit_form/{id}(id=${company.id})}" method="get"
                       style="display:inline;">
                     <button type="submit">Edit</button>
-                </form>
-                <form th:action="@{'/delete/' + ${company.id}}" method="post" style="display:inline;">
-                    <button type="submit">Delete</button>
                 </form>
             </td>
         </tr>
