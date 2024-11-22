@@ -141,12 +141,6 @@
             <p class="published-at" th:text="${#dates.format(post.publishedAt, 'HH:mm dd/MM/yyyy')}">Published At</p>
             <p class="comment" th:text="${'Comments: ' + post.getPostComments().size()}">Comment</p>
             <a th:href="@{/post/details/{id}(id = ${post.id}, userId = ${user.id})}" class="view-details">View Details</a>
-            <div class="comment-form">
-                <form th:action="@{'/posts/' + ${post.id} + '/comments'}" method="post">
-                    <textarea name="comment" rows="3" placeholder="Add a comment..."></textarea>
-                    <button type="submit">Submit</button>
-                </form>
-            </div>
         </div>
     </div>
 </div>

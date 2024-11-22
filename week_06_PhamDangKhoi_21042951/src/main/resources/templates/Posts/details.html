@@ -66,6 +66,73 @@
         .account:hover {
             background-color: #0056b3;
         }
+        .text_comment {
+            margin-top: 20px;
+        }
+        .text_comment input, .text_comment textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        .text_comment textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .text_comment button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .text_comment button:hover {
+            background-color: #0056b3;
+        }
+        .field_comment {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .field_comment h2 {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        .field_comment div {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .field_comment h3 {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .field_comment p {
+            font-size: 1em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .field_comment hr {
+            border: 0;
+            border-top: 1px solid #ddd;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -75,11 +142,29 @@
 <div class="container">
     <div class="title">
         <h1 th:text="${post.getTitle()}"></h1>
-        <a th:href="@{/author/accountDetail(id = ${post.getAuthor().id}, userId = ${user.id})}" class="author" th:text="${post.getAuthor().firstName} + ' ' + ${post.getAuthor().middleName} + ' ' + ${post.getAuthor().lastName}">Author</a>        <p id="published_Time" class="published_Time" th:text="${'Published At: ' + #dates.format(post.publishedAt, 'HH:mm dd/MM/yyyy')}"></p>
+        <a th:href="@{/author/accountDetail(id = ${post.getAuthor().id}, userId = ${user.id})}" class="author" th:text="${post.getAuthor().firstName} + ' ' + ${post.getAuthor().middleName} + ' ' + ${post.getAuthor().lastName}">Author</a>
+        <p id="published_Time" class="published_Time" th:text="${'Published At: ' + #dates.format(post.publishedAt, 'HH:mm dd/MM/yyyy')}"></p>
         <hr>
     </div>
     <div class="content">
         <p id="content" th:text="${post.getContent()}"></p>
+    </div>
+
+    <div class="text_comment">
+        <form th:action="@{/post/comment (userId = ${user.id}, postId = ${post.id})}" method="post" th:object="${postComment}">
+            <input type="text" th:field="*{title}" placeholder="Title...">
+            <textarea th:field="*{content}" placeholder="Add a comment..."></textarea>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    <div class="field_comment">
+        <h2>Comments</h2>
+        <div th:each="comment : ${post.getPostComments()}">
+            <h3 th:text="${comment.getTitle()}"></h3>
+            <p th:text="${comment.getContent()}"></p>
+            <p th:text="${'Published At: ' + #dates.format(comment.publishedAt, 'HH:mm dd/MM/yyyy')}"></p>
+            <hr>
+        </div>
     </div>
 </div>
 </body>

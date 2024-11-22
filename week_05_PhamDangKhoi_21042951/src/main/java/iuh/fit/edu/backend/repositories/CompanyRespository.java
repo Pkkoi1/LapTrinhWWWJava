@@ -20,8 +20,5 @@ public interface CompanyRespository extends JpaRepository<Company, Long> {
     @Query("SELECT c FROM Company c inner join c.jobs j on c.id=j.company.id " +
             "where UPPER(j.jobName) LIKE  UPPER(?1)")
     Page<Company> findByJob(String key, Pageable pageable);
-
-    @Query("select c from Company c inner join c.jobs j inner join j.jobSkills jobSkills " +
-            "where jobSkills.skill.skillName = ?1")
-    List<Company> findBySkill(String skillName);
+    
 }

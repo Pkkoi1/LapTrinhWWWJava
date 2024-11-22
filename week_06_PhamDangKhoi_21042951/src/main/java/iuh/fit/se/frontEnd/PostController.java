@@ -2,8 +2,10 @@ package iuh.fit.se.frontEnd;
 
 
 import iuh.fit.se.backEnd.Models.Post;
+import iuh.fit.se.backEnd.Models.PostComment;
 import iuh.fit.se.backEnd.Models.User;
 import iuh.fit.se.backEnd.Repositories.UserRepository;
+import iuh.fit.se.backEnd.Repositories.postCommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +32,9 @@ public class PostController {
     private postRepository postRepository;
 
     @Autowired
+    private postCommentRepository p;
+
+    @Autowired
     private UserRepository userRepository;
 
     @GetMapping(value = {"/", ""})
@@ -47,8 +52,12 @@ public class PostController {
     public ModelAndView showPostDetails(@PathVariable("id") long id, long userId) {
         ModelAndView modelAndView = new ModelAndView("Posts/details");
         Post post = postService.findById(id);
+        PostComment postComment = new PostComment();
+        postComment.setPost(post);
+        modelAndView.addObject("postComment", postComment);
         modelAndView.addObject("post", post);
         modelAndView.addObject("user", userService.findById(userId));
+
         return modelAndView;
     }
 
@@ -74,5 +83,17 @@ public class PostController {
         Post savedPost = postRepository.save(post);
         redirectAttributes.addAttribute("id", user.getId());
         return "redirect:/user/account/user={id}";
+    }
+    @PostMapping("/comment")
+    public String comment(@ModelAttribute PostComment postComment, @RequestParam Long userId, @RequestParam Long postId,RedirectAttributes redirectAttributes) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + userId));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("Invalid post Id:" + postId));
+        postComment.setPost(post);
+        postComment.setCreatedAt(Instant.now());
+        postComment.setPublishedAt(Instant.now());
+        postComment.setPublished(true);
+        redirectAttributes.addFlashAttribute("user", user);
+        p.save(postComment);
+        return "redirect:/post";
     }
 }
